@@ -223,6 +223,9 @@ class SimpleModel:
             nodes.append({"T": state, "id": state_id, "str": 0})
             state_id += 1
 
+        for state_id in self.epistemic_class_for_state(0, 0):
+            nodes[state_id]["bgn"] = 1
+
         links = []
         for state_id in range(0, self.no_states):
             for transition in self.graph[state_id]:
