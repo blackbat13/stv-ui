@@ -226,6 +226,8 @@ class SimpleModel:
         links = []
         for state_id in range(0, self.no_states):
             for transition in self.graph[state_id]:
+                if transition.next_state == state_id:
+                    continue
                 links.append({"source": state_id, "target": transition.next_state, "T": transition.actions, "str": 0})
 
         return json.dumps({"nodes": nodes, "links": links})
@@ -240,6 +242,8 @@ class SimpleModel:
         links = []
         for state_id in range(0, self.no_states):
             for transition in self.graph[state_id]:
+                if transition.next_state == state_id:
+                    continue
                 actions = []
                 ln = 0
                 if strategy[state_id] != None:
@@ -269,6 +273,8 @@ class SimpleModel:
             if state_id == self.first_state_id:
                 continue
             for transition in self.graph[state_id]:
+                if transition.next_state == state_id:
+                    continue
                 actions = []
                 ln = 0
                 if strategy[state_id] != None:
