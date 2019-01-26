@@ -11,7 +11,9 @@ function createWindow() {
     win.loadFile('index.html');
 
     // Otwórz Narzędzia Deweloperskie.
-    win.webContents.openDevTools();
+    // win.webContents.openDevTools();
+
+    win.maximize();
 
     // Emitowane, gdy okno jest zamknięte.
     win.on('closed', () => {
