@@ -280,3 +280,15 @@ div.tooltip {
     width: 100%;
     height: 100vh;
 }
+
+#btn_lower_approx, #btn_upper_approx {
+    font-size: large;
+    height: auto;
+}
+
+#formula {
+    width: 100%;
+    height: 25px;
+    font-size: large;
+    font-weight: bold;
+}

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Hello World!</title>
+    <title>STV v.0.5</title>
     <script>if (typeof module === 'object') {
         window.module = module;
         module = undefined;
@@ -11,6 +11,7 @@
     <script>if (window.module) module = window.module;</script>
     <link href="css/main.css" type="text/css" rel="stylesheet"/>
     <link href="node_modules/bootstrap/dist/css/bootstrap.min.css" type="text/css" rel="stylesheet"/>
+    <link href="node_modules/font-awesome/css/font-awesome.min.css" type="text/css" rel="stylesheet">
     <script src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
     <script src="node_modules/d3/dist/d3.js"></script>
     <script src="node_modules/lodash/lodash.min.js"></script>
@@ -25,12 +26,11 @@
         <div class="col-4">
             <form>
                 <div>
-                    <label for="models">Models</label>
                     <select name="models" id="models">
                         <option value="none">Select model</option>
                         <option value="tianji">Tian Ji</option>
                         <option value="castles">Castles</option>
-                        <option value="bridge">Bridge Game</option>
+                        <option value="bridge">Bridge Endplay</option>
                         <option value="drone">Drones</option>
                         <option value="voting">Simple Voting</option>
                     </select>
@@ -57,26 +57,31 @@
                     <button type="button" class="btn btn-lg btn-primary" id="btn_generate">Generate</button>
                 </div>
                 <div>
-                    <button type="button" class="btn btn-lg btn-primary" id="btn_lower_approx">Lower approx.</button>
+                    <pre id="formula"></pre>
                 </div>
-                <div>
-                    <button type="button" class="btn btn-lg btn-primary" id="btn_upper_approx">Upper approx.</button>
+                <div class="row">
+                    <div class="col-6">
+                        <button type="button" class="btn btn-lg btn-primary" id="btn_lower_approx">Lower approx.</button>
+                    </div>
+                    <div class="col-6">
+                        <button type="button" class="btn btn-lg btn-primary" id="btn_upper_approx">Upper approx.</button>
+                    </div>
                 </div>
                 <div>
                     <button type="button" class="btn btn-lg btn-primary" id="btn_domino_dfs">Domino DFS</button>
                 </div>
-                <div>
-                    <button type="button" class="btn btn-lg btn-primary" id="btn_zoom_in">Zoom in</button>
-                </div>
-                <div>
-                    <button type="button" class="btn btn-lg btn-primary" id="btn_zoom_out">Zoom out</button>
+                <div class="row">
+                    <div class="col-6">
+                        <button type="button" class="btn btn-lg btn-primary" id="btn_zoom_out"><i class="fa fa-search-minus"></i></button>
+                    </div>
+                    <div class="col-6">
+                        <button type="button" class="btn btn-lg btn-primary" id="btn_zoom_in"><i class="fa fa-search-plus"></i></button>
+                    </div>
                 </div>
                 <div>
                     <button type="button" class="btn btn-lg btn-primary" id="btn_freeze">Freeze</button>
                 </div>
-                <div>
-                    <p id="formula"></p>
-                </div>
+
 
             </form>
         </div>
@@ -325,7 +330,7 @@
             $param1div.css('visibility', 'visible');
             $param2div.css('visibility', 'visible');
             $param1Label.empty();
-            $param1Label.html("Cards available:");
+            $param1Label.html("Deck size (cards per player):");
             $param2Label.empty();
             $param2Label.html("Cards in hand:");
 
@@ -395,11 +400,11 @@
         function selectionDrone() {
             hideParams();
             $param1div.css('visibility', 'visible');
-            $param2div.css('visibility', 'visible')
+            $param2div.css('visibility', 'visible');
             $param1Label.empty();
             $param1Label.html("Number of drones:");
             $param2Label.empty();
-            $param2Label.html("Drones initial energy:");
+            $param2Label.html("Initial energy:");
 
             $pFormula.text('<<D>>F visited>=2');
 
