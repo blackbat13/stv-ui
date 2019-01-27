@@ -26,5 +26,8 @@ for i in range(0, castle1_size):
 strategy_comparer = StrategyComparer(castle_model.model, castle_model.get_actions()[0])
 
 (result, strategy) = strategy_comparer.generate_strategy_dfs(0, set(winning), agents, strategy_comparer.basic_h)
-castle_model.listify_states()
+if result:
+    print("1")
+else:
+    print("0")
 print(castle_model.model.js_dump_strategy(strategy))

@@ -11,7 +11,7 @@ print(simple_voting.model.js_dump())
 winning = []
 
 state_id = -1
-voter_number = 1
+voter_number = 0
 
 for state in simple_voting.states:
     state_id += 1
@@ -24,4 +24,8 @@ agents = [1]
 strategy_comparer = StrategyComparer(simple_voting.model, simple_voting.get_actions()[1])
 
 (result, strategy) = strategy_comparer.generate_strategy_dfs(0, set(winning), agents, strategy_comparer.basic_h)
+if result:
+    print("1")
+else:
+    print("0")
 print(simple_voting.model.js_dump_strategy(strategy))

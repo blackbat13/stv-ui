@@ -19,19 +19,41 @@
 <body>
 <div class="container-fluid">
     <!-- Modal -->
-    <div class="modal fade" id="resultModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal fade" id="resultModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Verification finished</h5>
+                    <h5 class="modal-title">Verification finished</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
                     <p>Formula: <span id="modalFormula"></span></p>
-                    <p>Verification result: formula <span id="verifTrue">holds</span><span id="verifFalse">does not hold</span> in the model</p>
+                    <p>Verification result: formula <span id="verifTrue">holds</span><span
+                            id="verifFalse">does not hold</span> in the model</p>
                     <p>Number of states where formula holds: <span id="noStates"></span></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="dominoModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">DominoDFS finished</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>Formula: <span id="dominoFormula"></span></p>
+                    <p>Result: strategy <span><span id="stratFalse">not</span> found</span></p>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-success" data-dismiss="modal">Close</button>
@@ -66,22 +88,22 @@
                     <div id="param2div" class="form-group" style="visibility: hidden;">
                         <label id="param2Label" class="form-label" for="param2Input"></label>
 
-                            <input class="form-control" type="number" min="1" max="5" id="param2Input" value="1"
-                                   step="1"/>
+                        <input class="form-control" type="number" min="1" max="5" id="param2Input" value="1"
+                               step="1"/>
 
                     </div>
                     <div id="param3div" class="form-group" style="visibility: hidden;">
                         <label id="param3Label" class="form-label" for="param3Input"></label>
 
-                            <input class="form-control" type="number" min="1" max="5" id="param3Input" value="1"
-                                   step="1"/>
+                        <input class="form-control" type="number" min="1" max="5" id="param3Input" value="1"
+                               step="1"/>
 
                     </div>
                     <div id="param4div" class="form-group" style="visibility: hidden;">
                         <label id="param4Label" class="form-label" for="param4Input"></label>
 
-                            <input class="form-control" type="number" min="1" max="5" id="param4Input" value="1"
-                                   step="1"/>
+                        <input class="form-control" type="number" min="1" max="5" id="param4Input" value="1"
+                               step="1"/>
 
                     </div>
                 </div>
@@ -158,6 +180,9 @@
         let $verifTrue = $("#verifTrue");
         let $verifFalse = $("#verifFalse");
         let $noStates = $("#noStates");
+        let $dominoModal = $("#dominoModal");
+        let $dominoFormula = $("#dominoFormula");
+        let $stratFalse = $("#stratFalse");
 
         window.scrollTo(3800, 3800);
 
@@ -211,14 +236,12 @@
 
         function resetGraph() {
             $svgGraph.empty();
-            // scale = 1;
-            // window.scrollTo( 3800, 3800 );
             window.scrollTo(4500, 4500);
         }
 
         function loadModalResults(results) {
             let formulaResult = results[results.length - 3];
-            if(formulaResult === "1") {
+            if (formulaResult === "1") {
                 $verifFalse.addClass('display_none');
                 $verifTrue.removeClass('display_none');
             } else {
@@ -232,6 +255,17 @@
             $resultModal.modal('show');
         }
 
+        function loadDominoResults(results) {
+            let strategyResult = results[results.length - 2];
+            if (strategyResult === "1") {
+                $stratFalse.addClass('display_none');
+            } else {
+                $stratFalse.removeClass('display_none');
+            }
+
+            $dominoModal.modal('show');
+        }
+
         function selectionTianJi() {
             hideParams();
             $param1div.css('visibility', 'visible');
@@ -240,6 +274,7 @@
 
             $pFormula.text('<<TianJi>>F Win');
             $modalFormula.text('<<TianJi>>F Win');
+            $dominoFormula.text('<<TianJi>>F Win');
 
             $generateButton.off('click');
             $generateButton.on('click', function () {
@@ -298,6 +333,7 @@
                     if (err) throw err;
                     console.log('domino_tian_ji.py finished.');
                     loadGraph(JSON.parse(results[results.length - 1]));
+                    loadDominoResults(results);
                 });
             });
         }
@@ -319,6 +355,7 @@
 
             $pFormula.text('<<C1>>F Castle3Defeated');
             $modalFormula.text('<<C1>>F Castle3Defeated');
+            $dominoFormula.text('<<C1>>F Castle3Defeated');
 
             $generateButton.off('click');
             $generateButton.on('click', function () {
@@ -390,6 +427,7 @@
                     if (err) throw err;
                     console.log('domino_castles.py finished.');
                     loadGraph(JSON.parse(results[results.length - 1]));
+                    loadDominoResults(results);
                 });
             });
         }
@@ -405,6 +443,7 @@
 
             $pFormula.text('<<N>>F win');
             $modalFormula.text('<<N>>F win');
+            $dominoFormula.text('<<N>>F win');
 
             $generateButton.off('click');
             $generateButton.on('click', function () {
@@ -467,6 +506,7 @@
                     if (err) throw err;
                     console.log('domino_bridge.py finished.');
                     loadGraph(JSON.parse(results[results.length - 1]));
+                    loadDominoResults(results);
                 });
             });
         }
@@ -482,6 +522,7 @@
 
             $pFormula.text('<<D>>F visited>=2');
             $modalFormula.text('<<D>>F visited>=2');
+            $dominoFormula.text('<<D>>F visited>=2');
 
             $generateButton.off('click');
             $generateButton.on('click', function () {
@@ -544,6 +585,7 @@
                     if (err) throw err;
                     console.log('domino_drone.py finished.');
                     loadGraph(JSON.parse(results[results.length - 1]));
+                    loadDominoResults(results);
                 });
             });
         }
@@ -559,6 +601,7 @@
 
             $pFormula.text('<<Voter_1>>F (finish_1 & ~pun_1 & ~vote_{1,1})');
             $modalFormula.text('<<Voter_1>>F (finish_1 & ~pun_1 & ~vote_{1,1})');
+            $dominoFormula.text('<<Voter_1>>F (finish_1 & ~pun_1 & ~vote_{1,1})');
 
             $generateButton.off('click');
             $generateButton.on('click', function () {
@@ -620,6 +663,7 @@
                     if (err) throw err;
                     console.log('domino_simple_voting.py finished.');
                     loadGraph(JSON.parse(results[results.length - 1]));
+                    loadDominoResults(results);
                 });
             });
         }

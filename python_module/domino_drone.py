@@ -39,4 +39,8 @@ for i in range(0, n):
 
 (result, strategy) = strategy_comparer.generate_strategy_dfs(0, set(winning_states), agents, strategy_comparer.basic_h)
 drone_model.listify_states()
+if result:
+    print("1")
+else:
+    print("0")
 print(drone_model.model.js_dump_strategy(strategy))

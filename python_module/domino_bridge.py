@@ -30,4 +30,8 @@ for state in bridge_model.states:
 strategy_comparer = StrategyComparer(bridge_model.model, bridge_model.get_actions()[0])
 
 (result, strategy) = strategy_comparer.generate_strategy_dfs(bridge_model.model.first_state_id, set(winning), [0], strategy_comparer.basic_h)
+if result:
+    print("1")
+else:
+    print("0")
 print(bridge_model.model.js_dump_strategy_subjective(strategy))
