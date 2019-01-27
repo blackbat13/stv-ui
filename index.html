@@ -19,7 +19,7 @@
 <body>
 <div class="container-fluid">
     <!-- Modal -->
-    <div class="modal fade" id="resultModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    <div class="modal fade" id="upperApproxModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
          aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -30,10 +30,32 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <p>Formula: <span id="modalFormula"></span></p>
-                    <p>Verification result: formula <span id="verifTrue">holds</span><span
-                            id="verifFalse">does not hold</span> in the model</p>
-                    <p>Number of states where formula holds: <span id="noStates"></span></p>
+                    <p>The formula: <span id="lowerApproxModalFormula"></span></p>
+                    <p>Verification result: the formula <span id="upperApproxTrue">might hold</span><span
+                            id="upperApproxFalse">does not hold</span> in the model</p>
+                    <p>Number of states where formula might hold: <span id="upperApproxNoStates"></span></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="lowerApproxModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Verification finished</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>The formula: <span id="upperApproxModalFormula"></span></p>
+                    <p>Verification result: the formula <span id="lowerApproxTrue">holds</span><span
+                            id="lowerApproxFalse">does not have to hold</span> in the model</p>
+                    <p>Number of states where formula holds: <span id="lowerApproxNoStates"></span></p>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-success" data-dismiss="modal">Close</button>
@@ -52,7 +74,7 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <p>Formula: <span id="dominoFormula"></span></p>
+                    <p>The formula: <span id="dominoFormula"></span></p>
                     <p>Result: strategy <span><span id="stratFalse">not</span> found</span></p>
                 </div>
                 <div class="modal-footer">
@@ -189,21 +211,23 @@
         let $divGraph = $('#div_graph');
         let $pFormula = $('#formula');
         let scale = 1;
-        let $resultModal = $("#resultModal");
-        let $loadingModal = $("#loadMe");
-        let $modalFormula = $("#modalFormula");
-        let $verifTrue = $("#verifTrue");
-        let $verifFalse = $("#verifFalse");
-        let $noStates = $("#noStates");
         let $dominoModal = $("#dominoModal");
         let $dominoFormula = $("#dominoFormula");
         let $stratFalse = $("#stratFalse");
         let $selectHeuristic = $("#heuristic");
 
-        window.scrollTo(3800, 3800);
+        let $upperApproxModal = $("#upperApproxModal");
+        let $lowerApproxModal = $("#lowerApproxModal");
+        let $upperApproxModalFormula = $("#upperApproxModalFormula");
+        let $lowerApproxModalFormula = $("#lowerApproxModalFormula");
+        let $upperApproxTrue = $('#upperApproxTrue');
+        let $lowerApproxTrue = $('#lowerApproxTrue');
+        let $upperApproxFalse = $('#upperApproxFalse');
+        let $lowerApproxFalse = $('#lowerApproxFalse');
+        let $upperApproxNoStates = $('#upperApproxNoStates');
+        let $lowerApproxNoStates = $('#lowerApproxNoStates');
 
-        // $svgGraph.attr('width', $divGraph.width());
-        // $svgGraph.attr('height', $divGraph.height());
+        window.scrollTo(3800, 3800);
 
         function hideParams() {
             $param1div.css('visibility', 'hidden');
@@ -213,10 +237,7 @@
         }
 
         $buttonZoomIn.on('click', function () {
-            let currentX = window.scrollX;
-            let currentY = window.scrollY;
             scale += 0.1;
-            // window.scrollTo(currentX * (scale / (scale - 0.1)), currentY * (scale / (scale - 0.1)));
             $("svg").attr('transform', "scale(" + scale + ")");
         });
 
@@ -225,11 +246,7 @@
                 return;
             }
 
-            let currentX = window.scrollX;
-            let currentY = window.scrollY;
             scale -= 0.1;
-            // window.scrollTo(currentX * (scale / (scale + 0.1)), currentY * (scale / (scale + 0.1)));
-
             $("svg").attr('transform', "scale(" + scale + ")");
         });
 
@@ -254,20 +271,36 @@
             window.scrollTo(4500, 4500);
         }
 
-        function loadModalResults(results) {
+        function loadUpperApproxModal(results) {
             let formulaResult = results[results.length - 3];
             if (formulaResult === "1") {
-                $verifFalse.addClass('display_none');
-                $verifTrue.removeClass('display_none');
+                $upperApproxFalse.addClass('display_none');
+                $upperApproxTrue.removeClass('display_none');
             } else {
-                $verifTrue.addClass('display_none');
-                $verifFalse.removeClass('display_none');
+                $upperApproxFalse.removeClass('display_none');
+                $upperApproxTrue.addClass('display_none');
             }
 
             let noStates = results[results.length - 2];
-            $noStates.text(noStates);
+            $upperApproxNoStates.text(noStates);
 
-            $resultModal.modal('show');
+            $upperApproxModal.modal('show');
+        }
+
+        function loadLowerApproxModal(results) {
+            let formulaResult = results[results.length - 3];
+            if (formulaResult === "1") {
+                $lowerApproxFalse.addClass('display_none');
+                $lowerApproxTrue.removeClass('display_none');
+            } else {
+                $lowerApproxFalse.removeClass('display_none');
+                $lowerApproxTrue.addClass('display_none');
+            }
+
+            let noStates = results[results.length - 2];
+            $lowerApproxNoStates.text(noStates);
+
+            $lowerApproxModal.modal('show');
         }
 
         function loadDominoResults(results) {
@@ -281,26 +314,29 @@
             $dominoModal.modal('show');
         }
 
+        function setFormula(formula) {
+            $pFormula.text(formula);
+            $upperApproxModalFormula.text(formula);
+            $lowerApproxModalFormula.text(formula);
+            $dominoFormula.text(formula);
+        }
+
         function selectionTianJi() {
             hideParams();
             $param1div.css('visibility', 'visible');
             $param1Label.empty();
             $param1Label.html("Horses:");
 
-            $pFormula.text('<<TianJi>>F Win');
-            $modalFormula.text('<<TianJi>>F Win');
-            $dominoFormula.text('<<TianJi>>F Win');
+            setFormula('<<TianJi>>F Win');
 
             $generateButton.off('click');
             $generateButton.on('click', function () {
                 let horses = $param1Input.val();
                 resetGraph();
-                // $loadingModal.modal('show');
                 pyshell.run('python_module/run_tian_ji.py', {args: [horses]}, function (err, results) {
                     if (err) throw err;
                     console.log('run_tian_ji.py finished.');
                     loadGraph(JSON.parse(results[0]));
-                    // $loadingModal.modal('hide');
                 });
             });
 
@@ -317,7 +353,7 @@
                         $("#node_" + states[i]).attr('fill', '#0F0');
                     }
 
-                    loadModalResults(results);
+                    loadLowerApproxModal(results);
                 });
             });
 
@@ -334,7 +370,7 @@
                         $("#node_" + states[i]).attr('fill', '#0F0');
                     }
 
-                    loadModalResults(results);
+                    loadUpperApproxModal(results);
                 });
             });
 
@@ -369,9 +405,7 @@
             $param4Label.empty();
             $param4Label.html("Life:");
 
-            $pFormula.text('<<C1>>F Castle3Defeated');
-            $modalFormula.text('<<C1>>F Castle3Defeated');
-            $dominoFormula.text('<<C1>>F Castle3Defeated');
+            setFormula('<<C1>>F Castle3Defeated');
 
             $generateButton.off('click');
             $generateButton.on('click', function () {
@@ -405,7 +439,7 @@
                         $("#node_" + states[i]).attr('fill', '#0F0');
                     }
 
-                    loadModalResults(results);
+                    loadLowerApproxModal(results);
                 });
             });
 
@@ -426,7 +460,7 @@
                         $("#node_" + states[i]).attr('fill', '#0F0');
                     }
 
-                    loadModalResults(results);
+                    loadUpperApproxModal(results);
                 });
             });
 
@@ -458,9 +492,7 @@
             $param2Label.empty();
             $param2Label.html("Cards in hand:");
 
-            $pFormula.text('<<N>>F win');
-            $modalFormula.text('<<N>>F win');
-            $dominoFormula.text('<<N>>F win');
+            setFormula('<<N>>F win');
 
             $generateButton.off('click');
             $generateButton.on('click', function () {
@@ -490,7 +522,7 @@
                         $("#node_" + states[i]).attr('fill', '#0F0');
                     }
 
-                    loadModalResults(results);
+                    loadLowerApproxModal(results);
                 });
             });
 
@@ -508,7 +540,7 @@
                         $("#node_" + states[i]).attr('fill', '#0F0');
                     }
 
-                    loadModalResults(results);
+                    loadUpperApproxModal(results);
                 });
             });
 
@@ -538,9 +570,7 @@
             $param2Label.empty();
             $param2Label.html("Initial energy:");
 
-            $pFormula.text('<<D>>F visited>=2');
-            $modalFormula.text('<<D>>F visited>=2');
-            $dominoFormula.text('<<D>>F visited>=2');
+            setFormula('<<D>>F visited>=2');
 
             $generateButton.off('click');
             $generateButton.on('click', function () {
@@ -570,7 +600,7 @@
                         $("#node_" + states[i]).attr('fill', '#0F0');
                     }
 
-                    loadModalResults(results);
+                    loadLowerApproxModal(results);
                 });
             });
 
@@ -588,7 +618,7 @@
                         $("#node_" + states[i]).attr('fill', '#0F0');
                     }
 
-                    loadModalResults(results);
+                    loadUpperApproxModal(results);
                 });
             });
 
@@ -618,9 +648,7 @@
             $param2Label.empty();
             $param2Label.html("Candidates:");
 
-            $pFormula.text('<<Voter_1>>F (finish_1 & ~pun_1 & ~vote_{1,1})');
-            $modalFormula.text('<<Voter_1>>F (finish_1 & ~pun_1 & ~vote_{1,1})');
-            $dominoFormula.text('<<Voter_1>>F (finish_1 & ~pun_1 & ~vote_{1,1})');
+            setFormula('<<Voter_1>>F (finish_1 & ~pun_1 & ~vote_{1,1})');
 
             $generateButton.off('click');
             $generateButton.on('click', function () {
@@ -649,7 +677,7 @@
                         $("#node_" + states[i]).attr('fill', '#0F0');
                     }
 
-                    loadModalResults(results);
+                    loadLowerApproxModal(results);
                 });
             });
 
@@ -667,7 +695,7 @@
                         $("#node_" + states[i]).attr('fill', '#0F0');
                     }
 
-                    loadModalResults(results);
+                    loadUpperApproxModal(results);
                 });
             });
 
