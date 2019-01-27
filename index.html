@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>STV v.0.5</title>
+    <title>STV v0.5</title>
     <script>if (typeof module === 'object') {
         window.module = module;
         module = undefined;
@@ -124,6 +124,14 @@
                     </div>
                 </div>
                 <div>
+                    <select name="heuristic" id="heuristic">
+                        <option value="0">Basic heuristic</option>
+                        <option value="1">Control heuristic</option>
+                        <option value="2">Epistemic heuristic</option>
+                        <option value="3">Visited states heuristic</option>
+                    </select>
+                </div>
+                <div>
                     <button type="button" class="btn btn-lg btn-primary" id="btn_domino_dfs">Domino DFS</button>
                 </div>
                 <div class="row">
@@ -183,6 +191,7 @@
         let $dominoModal = $("#dominoModal");
         let $dominoFormula = $("#dominoFormula");
         let $stratFalse = $("#stratFalse");
+        let $selectHeuristic = $("#heuristic");
 
         window.scrollTo(3800, 3800);
 
@@ -221,8 +230,6 @@
             let selection = $("#models option:selected").val();
             if (selection === "tianji") {
                 selectionTianJi();
-            } else if (selection === "cryptographers") {
-
             } else if (selection === "castles") {
                 selectionCastles()
             } else if (selection === "bridge") {
@@ -326,10 +333,11 @@
             $buttonDominoDFS.off('click');
             $buttonDominoDFS.on('click', function () {
                 let horses = $param1Input.val();
+                let heuristic = $("#heuristic option:selected").val();
 
                 resetGraph();
 
-                pyshell.run('python_module/domino_tian_ji.py', {args: [horses]}, function (err, results) {
+                pyshell.run('python_module/domino_tian_ji.py', {args: [horses, heuristic]}, function (err, results) {
                     if (err) throw err;
                     console.log('domino_tian_ji.py finished.');
                     loadGraph(JSON.parse(results[results.length - 1]));
@@ -420,10 +428,11 @@
                 let castle2Size = $param2Input.val();
                 let castle3Size = $param3Input.val();
                 let life = $param4Input.val();
+                let heuristic = $("#heuristic option:selected").val();
                 resetGraph();
 
 
-                pyshell.run('python_module/domino_castles.py', {args: [castle1Size, castle2Size, castle3Size, life]}, function (err, results) {
+                pyshell.run('python_module/domino_castles.py', {args: [castle1Size, castle2Size, castle3Size, life, heuristic]}, function (err, results) {
                     if (err) throw err;
                     console.log('domino_castles.py finished.');
                     loadGraph(JSON.parse(results[results.length - 1]));
@@ -499,10 +508,11 @@
             $buttonDominoDFS.on('click', function () {
                 let n = $param1Input.val();
                 let k = $param2Input.val();
+                let heuristic = $("#heuristic option:selected").val();
 
                 resetGraph();
 
-                pyshell.run('python_module/domino_bridge.py', {args: [n, k]}, function (err, results) {
+                pyshell.run('python_module/domino_bridge.py', {args: [n, k, heuristic]}, function (err, results) {
                     if (err) throw err;
                     console.log('domino_bridge.py finished.');
                     loadGraph(JSON.parse(results[results.length - 1]));
@@ -578,10 +588,11 @@
             $buttonDominoDFS.on('click', function () {
                 let n = $param1Input.val();
                 let k = $param2Input.val();
+                let heuristic = $("#heuristic option:selected").val();
 
                 resetGraph();
 
-                pyshell.run('python_module/domino_drone.py', {args: [n, k]}, function (err, results) {
+                pyshell.run('python_module/domino_drone.py', {args: [n, k, heuristic]}, function (err, results) {
                     if (err) throw err;
                     console.log('domino_drone.py finished.');
                     loadGraph(JSON.parse(results[results.length - 1]));
@@ -656,10 +667,11 @@
             $buttonDominoDFS.on('click', function () {
                 let voters = $param1Input.val();
                 let candidates = $param2Input.val();
+                let heuristic = $("#heuristic option:selected").val();
 
                 resetGraph();
 
-                pyshell.run('python_module/domino_simple_voting.py', {args: [voters, candidates]}, function (err, results) {
+                pyshell.run('python_module/domino_simple_voting.py', {args: [voters, candidates, heuristic]}, function (err, results) {
                     if (err) throw err;
                     console.log('domino_simple_voting.py finished.');
                     loadGraph(JSON.parse(results[results.length - 1]));

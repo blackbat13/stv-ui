@@ -5,6 +5,7 @@ import json
 
 n = int(sys.argv[1])
 k = int(sys.argv[2])
+heuristic = int(sys.argv[3])
 
 energies = []
 for _ in range(0, n):
@@ -37,7 +38,15 @@ agents = []
 for i in range(0, n):
     agents.append(i)
 
-(result, strategy) = strategy_comparer.generate_strategy_dfs(0, set(winning_states), agents, strategy_comparer.basic_h)
+if heuristic == 0:
+    (result, strategy) = strategy_comparer.generate_strategy_dfs(0, set(winning_states), agents, strategy_comparer.basic_h)
+elif heuristic == 1:
+    (result, strategy) = strategy_comparer.generate_strategy_dfs(0, set(winning_states), agents, strategy_comparer.control_h)
+elif heuristic == 2:
+    (result, strategy) = strategy_comparer.generate_strategy_dfs(0, set(winning_states), agents, strategy_comparer.epistemic_h)
+elif heuristic == 3:
+    (result, strategy) = strategy_comparer.generate_strategy_dfs(0, set(winning_states), agents, strategy_comparer.visited_states_h)
+
 drone_model.listify_states()
 if result:
     print("1")

@@ -5,6 +5,7 @@ import sys
 
 n = int(sys.argv[1])
 k = int(sys.argv[2])
+heuristic = int(sys.argv[3])
 
 file_hands = open("bridge_hands.txt", "r")
 json_hands = file_hands.readline()
@@ -28,8 +29,15 @@ for state in bridge_model.states:
         winning.append(state_id)
 
 strategy_comparer = StrategyComparer(bridge_model.model, bridge_model.get_actions()[0])
+if heuristic == 0:
+    (result, strategy) = strategy_comparer.generate_strategy_dfs(bridge_model.model.first_state_id, set(winning), [0], strategy_comparer.basic_h)
+elif heuristic == 1:
+    (result, strategy) = strategy_comparer.generate_strategy_dfs(bridge_model.model.first_state_id, set(winning), [0], strategy_comparer.control_h)
+elif heuristic == 2:
+    (result, strategy) = strategy_comparer.generate_strategy_dfs(bridge_model.model.first_state_id, set(winning), [0], strategy_comparer.epistemic_h)
+elif heuristic == 3:
+    (result, strategy) = strategy_comparer.generate_strategy_dfs(bridge_model.model.first_state_id, set(winning), [0], strategy_comparer.visited_states_h)
 
-(result, strategy) = strategy_comparer.generate_strategy_dfs(bridge_model.model.first_state_id, set(winning), [0], strategy_comparer.basic_h)
 if result:
     print("1")
 else:
