@@ -18,6 +18,27 @@
 </head>
 <body>
 <div class="container-fluid">
+    <!-- Modal -->
+    <div class="modal fade" id="resultModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Verification finished</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>Formula: <span id="modalFormula"></span></p>
+                    <p>Verification result: formula <span id="verifTrue">holds</span><span id="verifFalse">does not hold</span> in the model</p>
+                    <p>Number of states where formula holds: <span id="noStates"></span></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="row">
         <div id="div_graph" class="col-8">
             <svg id="graph" width="10000" height="10000">
@@ -36,21 +57,32 @@
                     </select>
                 </div>
                 <div id="model_options">
-                    <div id="param1div" style="visibility: hidden;">
-                        <label id="param1Label" for="param1Input"></label>
-                        <input type="number" min="1" max="5" id="param1Input" value="1" step="1"/>
+                    <div id="param1div" class="form-group" style="visibility: hidden;">
+                        <label id="param1Label" class="form-label" for="param1Input"></label>
+                        <input class="form-control" type="number" min="1" max="5" id="param1Input" value="1"
+                               step="1"/>
+
                     </div>
-                    <div id="param2div" style="visibility: hidden;">
-                        <label id="param2Label" for="param2Input"></label>
-                        <input type="number" min="1" max="5" id="param2Input" value="1" step="1"/>
+                    <div id="param2div" class="form-group" style="visibility: hidden;">
+                        <label id="param2Label" class="form-label" for="param2Input"></label>
+
+                            <input class="form-control" type="number" min="1" max="5" id="param2Input" value="1"
+                                   step="1"/>
+
                     </div>
-                    <div id="param3div" style="visibility: hidden;">
-                        <label id="param3Label" for="param3Input"></label>
-                        <input type="number" min="1" max="5" id="param3Input" value="1" step="1"/>
+                    <div id="param3div" class="form-group" style="visibility: hidden;">
+                        <label id="param3Label" class="form-label" for="param3Input"></label>
+
+                            <input class="form-control" type="number" min="1" max="5" id="param3Input" value="1"
+                                   step="1"/>
+
                     </div>
-                    <div id="param4div" style="visibility: hidden;">
-                        <label id="param4Label" for="param4Input"></label>
-                        <input type="number" min="1" max="5" id="param4Input" value="1" step="1"/>
+                    <div id="param4div" class="form-group" style="visibility: hidden;">
+                        <label id="param4Label" class="form-label" for="param4Input"></label>
+
+                            <input class="form-control" type="number" min="1" max="5" id="param4Input" value="1"
+                                   step="1"/>
+
                     </div>
                 </div>
                 <div>
@@ -61,10 +93,12 @@
                 </div>
                 <div class="row">
                     <div class="col-6">
-                        <button type="button" class="btn btn-lg btn-primary" id="btn_lower_approx">Lower approx.</button>
+                        <button type="button" class="btn btn-lg btn-primary" id="btn_lower_approx">Lower approx.
+                        </button>
                     </div>
                     <div class="col-6">
-                        <button type="button" class="btn btn-lg btn-primary" id="btn_upper_approx">Upper approx.</button>
+                        <button type="button" class="btn btn-lg btn-primary" id="btn_upper_approx">Upper approx.
+                        </button>
                     </div>
                 </div>
                 <div>
@@ -72,10 +106,12 @@
                 </div>
                 <div class="row">
                     <div class="col-6">
-                        <button type="button" class="btn btn-lg btn-primary" id="btn_zoom_out"><i class="fa fa-search-minus"></i></button>
+                        <button type="button" class="btn btn-lg btn-primary" id="btn_zoom_out"><i
+                                class="fa fa-search-minus"></i></button>
                     </div>
                     <div class="col-6">
-                        <button type="button" class="btn btn-lg btn-primary" id="btn_zoom_in"><i class="fa fa-search-plus"></i></button>
+                        <button type="button" class="btn btn-lg btn-primary" id="btn_zoom_in"><i
+                                class="fa fa-search-plus"></i></button>
                     </div>
                 </div>
                 <div>
@@ -116,6 +152,12 @@
         let $divGraph = $('#div_graph');
         let $pFormula = $('#formula');
         let scale = 1;
+        let $resultModal = $("#resultModal");
+        let $loadingModal = $("#loadMe");
+        let $modalFormula = $("#modalFormula");
+        let $verifTrue = $("#verifTrue");
+        let $verifFalse = $("#verifFalse");
+        let $noStates = $("#noStates");
 
         window.scrollTo(3800, 3800);
 
@@ -174,6 +216,22 @@
             window.scrollTo(4500, 4500);
         }
 
+        function loadModalResults(results) {
+            let formulaResult = results[results.length - 3];
+            if(formulaResult === "1") {
+                $verifFalse.addClass('display_none');
+                $verifTrue.removeClass('display_none');
+            } else {
+                $verifTrue.addClass('display_none');
+                $verifFalse.removeClass('display_none');
+            }
+
+            let noStates = results[results.length - 2];
+            $noStates.text(noStates);
+
+            $resultModal.modal('show');
+        }
+
         function selectionTianJi() {
             hideParams();
             $param1div.css('visibility', 'visible');
@@ -181,16 +239,18 @@
             $param1Label.html("Horses:");
 
             $pFormula.text('<<TianJi>>F Win');
+            $modalFormula.text('<<TianJi>>F Win');
 
             $generateButton.off('click');
             $generateButton.on('click', function () {
                 let horses = $param1Input.val();
                 resetGraph();
-
+                // $loadingModal.modal('show');
                 pyshell.run('python_module/run_tian_ji.py', {args: [horses]}, function (err, results) {
                     if (err) throw err;
                     console.log('run_tian_ji.py finished.');
                     loadGraph(JSON.parse(results[0]));
+                    // $loadingModal.modal('hide');
                 });
             });
 
@@ -206,6 +266,8 @@
                     for (let i = 0; i < states.length; i++) {
                         $("#node_" + states[i]).attr('fill', '#0F0');
                     }
+
+                    loadModalResults(results);
                 });
             });
 
@@ -221,6 +283,8 @@
                     for (let i = 0; i < states.length; i++) {
                         $("#node_" + states[i]).attr('fill', '#0F0');
                     }
+
+                    loadModalResults(results);
                 });
             });
 
@@ -254,6 +318,7 @@
             $param4Label.html("Life:");
 
             $pFormula.text('<<C1>>F Castle3Defeated');
+            $modalFormula.text('<<C1>>F Castle3Defeated');
 
             $generateButton.off('click');
             $generateButton.on('click', function () {
@@ -286,6 +351,8 @@
                     for (let i = 0; i < states.length; i++) {
                         $("#node_" + states[i]).attr('fill', '#0F0');
                     }
+
+                    loadModalResults(results);
                 });
             });
 
@@ -305,6 +372,8 @@
                     for (let i = 0; i < states.length; i++) {
                         $("#node_" + states[i]).attr('fill', '#0F0');
                     }
+
+                    loadModalResults(results);
                 });
             });
 
@@ -335,6 +404,7 @@
             $param2Label.html("Cards in hand:");
 
             $pFormula.text('<<N>>F win');
+            $modalFormula.text('<<N>>F win');
 
             $generateButton.off('click');
             $generateButton.on('click', function () {
@@ -363,6 +433,8 @@
                     for (let i = 0; i < states.length; i++) {
                         $("#node_" + states[i]).attr('fill', '#0F0');
                     }
+
+                    loadModalResults(results);
                 });
             });
 
@@ -379,6 +451,8 @@
                     for (let i = 0; i < states.length; i++) {
                         $("#node_" + states[i]).attr('fill', '#0F0');
                     }
+
+                    loadModalResults(results);
                 });
             });
 
@@ -407,6 +481,7 @@
             $param2Label.html("Initial energy:");
 
             $pFormula.text('<<D>>F visited>=2');
+            $modalFormula.text('<<D>>F visited>=2');
 
             $generateButton.off('click');
             $generateButton.on('click', function () {
@@ -435,6 +510,8 @@
                     for (let i = 0; i < states.length; i++) {
                         $("#node_" + states[i]).attr('fill', '#0F0');
                     }
+
+                    loadModalResults(results);
                 });
             });
 
@@ -451,6 +528,8 @@
                     for (let i = 0; i < states.length; i++) {
                         $("#node_" + states[i]).attr('fill', '#0F0');
                     }
+
+                    loadModalResults(results);
                 });
             });
 
@@ -479,6 +558,7 @@
             $param2Label.html("Candidates:");
 
             $pFormula.text('<<Voter_1>>F (finish_1 & ~pun_1 & ~vote_{1,1})');
+            $modalFormula.text('<<Voter_1>>F (finish_1 & ~pun_1 & ~vote_{1,1})');
 
             $generateButton.off('click');
             $generateButton.on('click', function () {
@@ -506,6 +586,8 @@
                     for (let i = 0; i < states.length; i++) {
                         $("#node_" + states[i]).attr('fill', '#0F0');
                     }
+
+                    loadModalResults(results);
                 });
             });
 
@@ -522,6 +604,8 @@
                     for (let i = 0; i < states.length; i++) {
                         $("#node_" + states[i]).attr('fill', '#0F0');
                     }
+
+                    loadModalResults(results);
                 });
             });
 
@@ -642,7 +726,7 @@
                             .style("top", (d3.event.pageY + 10) + "px");
                     });
 
-                link.transition().attr('stroke', function(d){
+                link.transition().attr('stroke', function (d) {
                     if (d.str === 1) {
                         return "#F00";
                     }
@@ -668,18 +752,18 @@
                     .append("g")
                     .attr("class", "node")
                     .call(d3.drag()
-                        .on("start", dragstarted)
-                        .on("drag", dragged)
+                            .on("start", dragstarted)
+                            .on("drag", dragged)
                         // .on("end", dragended)
                     );
 
                 node.append("circle")
-                    .attr('id', function(d){
+                    .attr('id', function (d) {
                         return "node_" + d.id
                     })
                     .attr("r", 20)
                     .attr("fill", function (d, i) {
-                        if(d.id === 0) {
+                        if (d.id === 0) {
                             return "#00F";
                         }
                         if (d.str === 1) {
@@ -753,7 +837,9 @@
 
                 node.append("text")
                     .attr("text-anchor", "middle")
-                    .attr("dy", ".3em").text(function(d){return d.id});
+                    .attr("dy", ".3em").text(function (d) {
+                    return d.id
+                });
 
                 // node.append("text")
                 //     .attr("dy", -3)
@@ -1093,8 +1179,8 @@
 
             //
             $buttonFreeze.off('click');
-            $buttonFreeze.on('click', function(){
-                _.each(currNodes, function(nd) {
+            $buttonFreeze.on('click', function () {
+                _.each(currNodes, function (nd) {
                     nd.fx = nd.x;
                     nd.fy = nd.y;
                 });

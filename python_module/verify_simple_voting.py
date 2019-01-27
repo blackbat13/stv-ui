@@ -16,7 +16,7 @@ else:
 winning = []
 
 state_id = -1
-voter_number = 1
+voter_number = 0
 
 for state in simple_voting.states:
     state_id += 1
@@ -27,5 +27,9 @@ for state in simple_voting.states:
 agents = [1]
 
 result = atl_model.minimum_formula_many_agents(agents, winning)
-
+if 0 in result:
+    print(1)
+else:
+    print(0)
+print(len(result))
 print(list(result))

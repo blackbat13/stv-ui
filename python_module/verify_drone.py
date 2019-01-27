@@ -29,5 +29,9 @@ for i in range(0, n):
     agents.append(i)
 
 result = atl_model.minimum_formula_many_agents(agents, winning)
-
+if 0 in result:
+    print(1)
+else:
+    print(0)
+print(len(result))
 print(list(result))

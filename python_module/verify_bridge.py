@@ -31,5 +31,9 @@ for state in bridge_model.states:
         winning.append(state_id)
 
 result = atl_model.minimum_formula_many_agents([0], winning)
-
+if 0 in result:
+    print(1)
+else:
+    print(0)
+print(len(result))
 print(list(result))
