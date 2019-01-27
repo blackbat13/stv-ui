@@ -108,11 +108,13 @@
                     </div>
                 </div>
                 <div>
-                    <button type="button" class="btn btn-lg btn-primary" id="btn_generate">Generate</button>
-                </div>
-                <div>
+                    <p id="pFormula" style="visibility: hidden">Formula to be verified:</p>
                     <pre id="formula"></pre>
                 </div>
+                <div>
+                    <button type="button" class="btn btn-lg btn-primary" id="btn_generate">Generate</button>
+                </div>
+                <hr/>
                 <div class="row">
                     <div class="col-6">
                         <button type="button" class="btn btn-lg btn-primary" id="btn_lower_approx">Lower approx.
@@ -232,6 +234,7 @@
         });
 
         $modelList.on('change', function () {
+            $("#pFormula").css("visibility", "visible");
             let selection = $("#models option:selected").val();
             if (selection === "tianji") {
                 selectionTianJi();
