@@ -689,7 +689,7 @@
         }
 
         function loadGraph(graph) {
-            var tooltip = d3.select("body")
+            let tooltip = d3.select("body")
                 .append("div")
                 .attr("class", "tooltip")
                 .style("opacity", 0);
@@ -701,45 +701,22 @@
             const width = 10000;
             const height = 10000;
 
-            // svg.append("svg:defs").selectAll("marker")
-            //     .data(["end"])      // Different link/path types can be defined here
-            //     .enter().append("svg:marker")    // This section adds in the arrows
-            //     .attr("id", String)
-            //     .attr("viewBox", "0 -5 10 10")
-            //     .attr("refX", 19)
-            //     .attr("refY", 0)
-            //     .attr("markerWidth", 3)
-            //     .attr("markerHeight", 3)
-            //     .attr("orient", "auto")
-            //     .append("svg:path")
-            //     .attr("d", "M0,-5L10,0L0,5");
-
             svg.append('defs').append('marker')
                 .attr("id", 'arrowhead')
                 .attr("viewBox", "0 -5 10 10")
                 .attr("refX", 19)
                 .attr("refY", 0)
-                .attr("markerWidth", 2)
-                .attr("markerHeight", 2)
+                .attr("markerWidth", 6)
+                .attr("markerHeight", 6)
                 .attr("orient", "auto")
                 .attr('xoverflow', 'visible')
                 .append('svg:path')
                 .attr('d', 'M 0,-5 L 10 ,0 L 0,5')
-                .attr('fill', '#999')
+                .style('fill', '#999')
                 .style('stroke', 'none');
 
-            // var simulation = d3.forceSimulation(currNodes)
-            // // .force('link', d3.forceLink().id(d => d.id))
-            //     .force("charge", d3.forceManyBody().strength(-1000))
-            //     .force("link", d3.forceLink(currLinks).distance(200))
-            //     .force('center', d3.forceCenter(width / 2, height / 2))
-            //     // .force('collide', d3.forceCollide(25))
-            //     .force("x", d3.forceX())
-            //     .force("y", d3.forceY())
-            //     .alphaTarget(1)
-            //     .on('tick', ticked);
 
-            var simulation = d3.forceSimulation()
+            let simulation = d3.forceSimulation()
                 .force("link", d3.forceLink().id(function (d) {
                     return d.id;
                 }).distance(100).strength(1))
@@ -752,7 +729,7 @@
                 link = svg.selectAll(".link")
                     .data(links)
                     .enter()
-                    .append("line")
+                    .append("path")
                     .attr("class", "link")
                     .attr('marker-end', 'url(#arrowhead)');
 
@@ -813,7 +790,6 @@
                     .call(d3.drag()
                             .on("start", dragstarted)
                             .on("drag", dragged)
-                        // .on("end", dragended)
                     );
 
                 node.append("circle")
@@ -853,56 +829,48 @@
                             .style("top", (d3.event.pageY + 10) + "px");
                     });
 
-                // // Draw nodes
-                // node.append('circle')
-                //     .attr('r', R)
-                //     .attr('id', function(d) {
-                //         return "node_" + d.id
-                //     })
-                //     .attr("fill", function (d) {
-                //         if (d.id === 0) {
-                //             return "#00F";
-                //         }
-                //
-                //         if (d.str === 1) {
-                //             return "#0F0";
-                //         }
-                //
-                //         return "#CCC";
-                //     })
-                //     .on('mouseover.tooltip', function (d) {
-                //         tooltip.transition()
-                //             .duration(300)
-                //             .style("opacity", .8);
-                //         tooltip.html("Node:" + d.id + "<p/>T:" + JSON.stringify(d.T))
-                //             .style("left", (d3.event.pageX) + "px")
-                //             .style("top", (d3.event.pageY + 10) + "px");
-                //     })
-                //     .on('mouseover.fade', fade(0.1))
-                //     .on("mouseout.tooltip", function () {
-                //         tooltip.transition()
-                //             .duration(100)
-                //             .style("opacity", 0);
-                //     })
-                //     .on('mouseout.fade', fade(1))
-                //     .on("mousemove", function () {
-                //         tooltip.style("left", (d3.event.pageX) + "px")
-                //             .style("top", (d3.event.pageY + 10) + "px");
-                //     })
-                //     .on('dblclick', releasenode);
-
-                // node.append("title")
-                //     .text(function (d) {return d.id;});
-
                 node.append("text")
                     .attr("text-anchor", "middle")
                     .attr("dy", ".3em").text(function (d) {
                     return d.id
                 });
 
-                // node.append("text")
-                //     .attr("dy", -3)
-                //     .text(function (d) {return d.name+":"+d.label;});
+                _.each(links, function (link) {
+
+                    // find other links with same target+source or source+target
+                    let same = _.filter(links, {
+                        'source': link.source,
+                        'target': link.target
+                    });
+                    let sameAlt = _.filter(links, {
+                        'source': link.target,
+                        'target': link.source
+                    });
+                    let sameAll = same.concat(sameAlt);
+
+                    _.each(sameAll, function (s, i) {
+                        s.sameIndex = (i + 1);
+                        s.sameTotal = sameAll.length;
+                        s.sameTotalHalf = (s.sameTotal / 2);
+                        s.sameUneven = ((s.sameTotal % 2) !== 0);
+                        s.sameMiddleLink = ((s.sameUneven === true) &&
+                            (Math.ceil(s.sameTotalHalf) === s.sameIndex));
+                        s.sameLowerHalf = (s.sameIndex <= s.sameTotalHalf);
+                        s.sameArcDirection = s.sameLowerHalf ? 0 : 1;
+                        s.sameIndexCorrected = s.sameLowerHalf ? s.sameIndex : (s.sameIndex - Math.ceil(s.sameTotalHalf));
+                    });
+                });
+
+                let maxSame = _.chain(links)
+                    .sortBy(function (x) {
+                        return x.sameTotal;
+                    })
+                    .last()
+                    .value().sameTotal;
+
+                _.each(links, function (link) {
+                    link.maxSameHalf = Math.round(maxSame / 2);
+                });
 
                 simulation
                     .nodes(nodes)
@@ -924,19 +892,7 @@
             }
 
             function ticked() {
-                link
-                    .attr("x1", function (d) {
-                        return d.source.x;
-                    })
-                    .attr("y1", function (d) {
-                        return d.source.y;
-                    })
-                    .attr("x2", function (d) {
-                        return d.target.x;
-                    })
-                    .attr("y2", function (d) {
-                        return d.target.y;
-                    });
+                link.attr("d", linkArc);
 
                 node
                     .attr("transform", function (d) {
@@ -946,269 +902,32 @@
                 edgepaths.attr('d', function (d) {
                     return 'M ' + d.source.x + ' ' + d.source.y + ' L ' + d.target.x + ' ' + d.target.y;
                 });
-
-                // edgelabels.attr('transform', function (d) {
-                //     if (d.target.x < d.source.x) {
-                //         var bbox = this.getBBox();
-                //
-                //         rx = bbox.x + bbox.width / 2;
-                //         ry = bbox.y + bbox.height / 2;
-                //         return 'rotate(180 ' + rx + ' ' + ry + ')';
-                //     }
-                //     else {
-                //         return 'rotate(0)';
-                //     }
-                // });
             }
 
-            // var R = 28;
-            //
-            // var g = svg.append("g");
-            // var link = g.append("g").selectAll(".link");
-            // node = g.append("g").selectAll(".node");
-            //
-            // //simulation.force('link')
-            // //.links(currLinks);
-            // restart();
-            //
-            // //Add mouseover events to links
-            // link.attr('class', 'link')
-            //     .on('mouseover.fade', linkFade(0.1))
-            //     .on('mouseover.tooltip', function (d) {
-            //         tooltip.transition()
-            //             .duration(300)
-            //             .style("opacity", .8);
-            //         tooltip.html("Source:" + d.source.id +
-            //             "<p/>Target:" + d.target.id +
-            //             "<p/>T:" + d.T)
-            //             .style("left", (d3.event.pageX) + "px")
-            //             .style("top", (d3.event.pageY + 10) + "px");
-            //     })
-            //     .on("mouseout.tooltip", function () {
-            //         tooltip.transition()
-            //             .duration(100)
-            //             .style("opacity", 0);
-            //     })
-            //     .on('mouseout.fade', linkFade(1))
-            //     .on("mousemove", function () {
-            //         tooltip.style("left", (d3.event.pageX) + "px")
-            //             .style("top", (d3.event.pageY + 10) + "px");
-            //     });
-            //
-            // link.attr("marker-end", "url(#end)");
-            //
-            // // Add Dragging Behavior to nodes
-            // var node = g.selectAll('.node')
-            //     .data(currNodes)
-            //     .enter().append('g')
-            //     .attr('class', 'node')
-            //     .call(d3.drag()
-            //         .on("start", dragstarted)
-            //         .on("drag", dragged)
-            //         .on("end", dragended));
-            //
-            // // Draw nodes
-            // node.append('circle')
-            //     .attr('r', R)
-            //     .attr('id', function(d) {
-            //         return "node_" + d.id
-            //     })
-            //     .attr("fill", function (d) {
-            //         if (d.id === 0) {
-            //             return "#00F";
-            //         }
-            //
-            //         if (d.str === 1) {
-            //             return "#0F0";
-            //         }
-            //
-            //         return "#CCC";
-            //     })
-            //     .on('mouseover.tooltip', function (d) {
-            //         tooltip.transition()
-            //             .duration(300)
-            //             .style("opacity", .8);
-            //         tooltip.html("Node:" + d.id + "<p/>T:" + JSON.stringify(d.T))
-            //             .style("left", (d3.event.pageX) + "px")
-            //             .style("top", (d3.event.pageY + 10) + "px");
-            //     })
-            //     .on('mouseover.fade', fade(0.1))
-            //     .on("mouseout.tooltip", function () {
-            //         tooltip.transition()
-            //             .duration(100)
-            //             .style("opacity", 0);
-            //     })
-            //     .on('mouseout.fade', fade(1))
-            //     .on("mousemove", function () {
-            //         tooltip.style("left", (d3.event.pageX) + "px")
-            //             .style("top", (d3.event.pageY + 10) + "px");
-            //     })
-            //     .on('dblclick', releasenode);
-            //
-            // node.append("text")
-            //     .attr("text-anchor", "middle")
-            //     .attr("dy", ".3em").text(function(d){return d.id});
-            //
-            //
-            // function restart() {
-            //     // Generate Statitics on links
-            //     _.each(currLinks, function (link) {
-            //
-            //         // find other links with same target+source or source+target
-            //         var same = _.filter(currLinks, {
-            //             'source': link.source,
-            //             'target': link.target
-            //         });
-            //         var sameAlt = _.filter(currLinks, {
-            //             'source': link.target,
-            //             'target': link.source
-            //         });
-            //         var sameAll = same.concat(sameAlt);
-            //
-            //         _.each(sameAll, function (s, i) {
-            //             s.sameIndex = (i + 1);
-            //             s.sameTotal = sameAll.length;
-            //             s.sameTotalHalf = (s.sameTotal / 2);
-            //             s.sameUneven = ((s.sameTotal % 2) !== 0);
-            //             s.sameMiddleLink = ((s.sameUneven === true) &&
-            //                 (Math.ceil(s.sameTotalHalf) === s.sameIndex));
-            //             s.sameLowerHalf = (s.sameIndex <= s.sameTotalHalf);
-            //             s.sameArcDirection = s.sameLowerHalf ? 0 : 1;
-            //             s.sameIndexCorrected = s.sameLowerHalf ? s.sameIndex : (s.sameIndex - Math.ceil(s.sameTotalHalf));
-            //         });
-            //     });
-            //
-            //     let maxSame = _.chain(currLinks)
-            //         .sortBy(function (x) {
-            //             return x.sameTotal;
-            //         })
-            //         .last()
-            //         .value().sameTotal;
-            //
-            //     _.each(currLinks, function (link) {
-            //         link.maxSameHalf = Math.round(maxSame / 2);
-            //     });
-            //
-            //     node = node.data(currNodes, function (d) {
-            //         return d.id
-            //     });
-            //
-            //     node.exit().transition()
-            //         .attr("r", 0)
-            //         .remove();
-            //
-            //     node.enter().append("circle")
-            //         .call(function (node) {
-            //             node.transition().attr("r", R);
-            //         })
-            //         .merge(node);
-            //
-            //     link = link.data(currLinks, function (d) {
-            //         return d.source.id + "-" + d.target.id;
-            //     });
-            //
-            //     link.exit().transition()
-            //         .attr("stroke-opacity", 0)
-            //         //.attrTween("d", linkArc)
-            //         .remove();
-            //
-            //     link = link.enter().append('path')
-            //         .call(function (link) {
-            //             link.transition().attr("stroke-opacity", 1);
-            //         })
-            //         .call(function (link) {
-            //             link.transition().attr("d", linkArc)
-            //         })
-            //         .call(function (link) {
-            //             link.transition().attr('stroke', function (d) {
-            //                 if (d.str === 1) {
-            //                     return "#F00";
-            //                 }
-            //
-            //                 return "#CCC";
-            //             })
-            //         })
-            //         .merge(link);
-            //
-            //     simulation.nodes(currNodes);
-            //     simulation.force("link").links(currLinks);
-            //     simulation.alpha(1).restart();
-            // }
-            //
-            // let runOnce = true;
-            //
-            // // setTimeout(function(){_.each(currNodes, function(nd) {
-            // //     nd.fx = nd.x;
-            // //     nd.fy = nd.y;
-            // // });}, 1000);
-            //
-            //
-            // function ticked() {
-            //     link.attr("d", linkArc);
-            //     node.attr('transform', d => `translate(${d.x},${d.y})`);
-            //     if (runOnce) {
-            //         // _.each(currNodes, function(nd) {
-            //         //     nd.fx = nd.x;
-            //         //     nd.fy = nd.y;
-            //         // });
-            //         runOnce = false;
-            //     }
-            //     // node.attr("cx", function(d) { return d.x; })
-            //     // .attr("cy", function(d) { return d.y; })
-            // }
-            //
-            // function dragstarted(d) {
-            //     if (!d3.event.active) simulation.alphaTarget(0.3).restart();
-            //     d.fx = d.x;
-            //     d.fy = d.y;
-            // }
-            //
-            // function dragged(d) {
-            //     d.fx = d3.event.x;
-            //     d.fy = d3.event.y;
-            // }
-            //
-            // function dragended(d) {
-            //     if (!d3.event.active) simulation.alphaTarget(0);
-            //     // d.fx = null;
-            //     // d.fy = null;
-            // }
-            //
-            // function releasenode(d) {
-            //     d.fx = null;
-            //     d.fy = null;
-            // }
-            //
-            // function linkArc(d) {
-            //     var dx = (d.target.x - d.source.x),
-            //         dy = (d.target.y - d.source.y),
-            //         dr = Math.sqrt(dx * dx + dy * dy),
-            //         unevenCorrection = (d.sameUneven ? 0 : 0.5);
-            //     // curvature term defines how tight the arcs are (lower number = tigher curve)
-            //     var curvature = 2,
-            //         arc = (1.0 / curvature) * ((dr * d.maxSameHalf) / (d.sameIndexCorrected - unevenCorrection));
-            //
-            //     // console.log(d.maxSameHalf)
-            //     //d.maxSameHalf always showing zero...
-            //     if (d.sameMiddleLink) {
-            //         arc = 0;
-            //     }
-            //
-            //     return "M" + d.source.x + "," + d.source.y + "A" + arc + "," + arc + " 0 0," + d.sameArcDirection + " " + d.target.x + "," + d.target.y;
-            // }
-            //
+            function linkArc(d) {
+                var dx = (d.target.x - d.source.x),
+                    dy = (d.target.y - d.source.y),
+                    dr = Math.sqrt(dx * dx + dy * dy),
+                    unevenCorrection = (d.sameUneven ? 0 : 0.5);
+                var curvature = 2,
+                    arc = (1.0 / curvature) * ((dr * d.maxSameHalf) / (d.sameIndexCorrected - unevenCorrection));
+
+                if (d.sameMiddleLink) {
+                    arc = 0;
+                }
+
+                return "M" + d.source.x + "," + d.source.y + "A" + arc + "," + arc + " 0 0," + d.sameArcDirection + " " + d.target.x + "," + d.target.y;
+            }
+
             const linkedByIndex = {};
             currLinks.forEach(d => {
                 linkedByIndex[`${d.source.index},${d.target.index}`] = 1;
             });
 
-            //
             function isConnected(a, b) {
                 return linkedByIndex[`${a.index},${b.index}`] || linkedByIndex[`${b.index},${a.index}`] || a.index === b.index;
             }
 
-            //
-            //Fade rules for hovering over nodes
             function fade(opacity) {
                 return d => {
                     node.style('stroke-opacity', function (o) {
@@ -1222,8 +941,6 @@
                 };
             }
 
-            //
-            //Specific Fade Rules for Link Hover Instances
             function linkFade(opacity) {
                 return d => {
                     node.style('stroke-opacity', function (o) {
@@ -1236,7 +953,6 @@
                 }
             }
 
-            //
             $buttonFreeze.off('click');
             $buttonFreeze.on('click', function () {
                 _.each(currNodes, function (nd) {
