@@ -127,7 +127,7 @@ div.tooltip {
 
 #formula {
     width: 100%;
-    height: 25px;
+    height: auto;
     font-size: large;
     font-weight: bold;
 }
