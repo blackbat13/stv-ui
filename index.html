@@ -344,12 +344,11 @@
             $buttonLowerApprox.on('click', function () {
                 let horses = $param1Input.val();
 
-                resetGraph();
-
                 pyshell.run('python_module/verify_tian_ji.py', {args: [horses, 1]}, function (err, results) {
                     if (err) throw err;
                     console.log('verify_tian_ji.py finished.');
-                    loadGraph(JSON.parse(results[results.length - 1]));
+                    let graph = JSON.parse(results[results.length - 1]);
+                    recolorGraph(graph);
                     loadLowerApproxModal(results);
                 });
             });
@@ -358,12 +357,11 @@
             $buttonUpperApprox.on('click', function () {
                 let horses = $param1Input.val();
 
-                resetGraph();
-
                 pyshell.run('python_module/verify_tian_ji.py', {args: [horses, 0]}, function (err, results) {
                     if (err) throw err;
                     console.log('verify_tian_ji.py finished.');
-                    loadGraph(JSON.parse(results[results.length - 1]));
+                    let graph = JSON.parse(results[results.length - 1]);
+                    recolorGraph(graph);
                     loadUpperApproxModal(results);
                 });
             });
@@ -373,12 +371,11 @@
                 let horses = $param1Input.val();
                 let heuristic = $("#heuristic option:selected").val();
 
-                resetGraph();
-
                 pyshell.run('python_module/domino_tian_ji.py', {args: [horses, heuristic]}, function (err, results) {
                     if (err) throw err;
                     console.log('domino_tian_ji.py finished.');
-                    loadGraph(JSON.parse(results[results.length - 1]));
+                    let graph = JSON.parse(results[results.length - 1]);
+                    recolorGraph(graph);
                     loadDominoResults(results);
                 });
             });
@@ -423,12 +420,11 @@
                 let castle3Size = $param3Input.val();
                 let life = $param4Input.val();
 
-                resetGraph();
-
                 pyshell.run('python_module/verify_castles.py', {args: [castle1Size, castle2Size, castle3Size, life, 1]}, function (err, results) {
                     if (err) throw err;
                     console.log('verify_castles.py finished.');
-                    loadGraph(JSON.parse(results[results.length - 1]));
+                    let graph = JSON.parse(results[results.length - 1]);
+                    recolorGraph(graph);
                     loadLowerApproxModal(results);
                 });
             });
@@ -440,12 +436,11 @@
                 let castle3Size = $param3Input.val();
                 let life = $param4Input.val();
 
-                resetGraph();
-
                 pyshell.run('python_module/verify_castles.py', {args: [castle1Size, castle2Size, castle3Size, life, 0]}, function (err, results) {
                     if (err) throw err;
                     console.log('verify_castles.py finished.');
-                    loadGraph(JSON.parse(results[results.length - 1]));
+                    let graph = JSON.parse(results[results.length - 1]);
+                    recolorGraph(graph);
                     loadUpperApproxModal(results);
                 });
             });
@@ -457,13 +452,12 @@
                 let castle3Size = $param3Input.val();
                 let life = $param4Input.val();
                 let heuristic = $("#heuristic option:selected").val();
-                resetGraph();
-
 
                 pyshell.run('python_module/domino_castles.py', {args: [castle1Size, castle2Size, castle3Size, life, heuristic]}, function (err, results) {
                     if (err) throw err;
                     console.log('domino_castles.py finished.');
-                    loadGraph(JSON.parse(results[results.length - 1]));
+                    let graph = JSON.parse(results[results.length - 1]);
+                    recolorGraph(graph);
                     loadDominoResults(results);
                 });
             });
@@ -499,12 +493,11 @@
                 let n = $param1Input.val();
                 let k = $param2Input.val();
 
-                resetGraph();
-
                 pyshell.run('python_module/verify_bridge.py', {args: [n, k, 1]}, function (err, results) {
                     if (err) throw err;
                     console.log('verify_bridge.py finished.');
-                    loadGraph(JSON.parse(results[results.length - 1]));
+                    let graph = JSON.parse(results[results.length - 1]);
+                    recolorGraph(graph);
                     loadLowerApproxModal(results);
                 });
             });
@@ -514,12 +507,11 @@
                 let n = $param1Input.val();
                 let k = $param2Input.val();
 
-                resetGraph();
-
                 pyshell.run('python_module/verify_bridge.py', {args: [n, k, 0]}, function (err, results) {
                     if (err) throw err;
                     console.log('verify_bridge.py finished.');
-                    loadGraph(JSON.parse(results[results.length - 1]));
+                    let graph = JSON.parse(results[results.length - 1]);
+                    recolorGraph(graph);
                     loadUpperApproxModal(results);
                 });
             });
@@ -530,12 +522,11 @@
                 let k = $param2Input.val();
                 let heuristic = $("#heuristic option:selected").val();
 
-                resetGraph();
-
                 pyshell.run('python_module/domino_bridge.py', {args: [n, k, heuristic]}, function (err, results) {
                     if (err) throw err;
                     console.log('domino_bridge.py finished.');
-                    loadGraph(JSON.parse(results[results.length - 1]));
+                    let graph = JSON.parse(results[results.length - 1]);
+                    recolorGraph(graph);
                     loadDominoResults(results);
                 });
             });
@@ -571,12 +562,11 @@
                 let n = $param1Input.val();
                 let k = $param2Input.val();
 
-                resetGraph();
-
                 pyshell.run('python_module/verify_drone.py', {args: [n, k, 1]}, function (err, results) {
                     if (err) throw err;
                     console.log('verify_drone.py finished.');
-                    loadGraph(JSON.parse(results[results.length - 1]));
+                    let graph = JSON.parse(results[results.length - 1]);
+                    recolorGraph(graph);
                     loadLowerApproxModal(results);
                 });
             });
@@ -586,12 +576,11 @@
                 let n = $param1Input.val();
                 let k = $param2Input.val();
 
-                resetGraph();
-
                 pyshell.run('python_module/verify_drone.py', {args: [n, k, 2]}, function (err, results) {
                     if (err) throw err;
                     console.log('verify_drone.py finished.');
-                    loadGraph(JSON.parse(results[results.length - 1]));
+                    let graph = JSON.parse(results[results.length - 1]);
+                    recolorGraph(graph);
                     loadUpperApproxModal(results);
                 });
             });
@@ -602,12 +591,11 @@
                 let k = $param2Input.val();
                 let heuristic = $("#heuristic option:selected").val();
 
-                resetGraph();
-
                 pyshell.run('python_module/domino_drone.py', {args: [n, k, heuristic]}, function (err, results) {
                     if (err) throw err;
                     console.log('domino_drone.py finished.');
-                    loadGraph(JSON.parse(results[results.length - 1]));
+                    let graph = JSON.parse(results[results.length - 1]);
+                    recolorGraph(graph);
                     loadDominoResults(results);
                 });
             });
@@ -642,12 +630,11 @@
                 let voters = $param1Input.val();
                 let candidates = $param2Input.val();
 
-                resetGraph();
-
                 pyshell.run('python_module/verify_simple_voting.py', {args: [voters, candidates, 1]}, function (err, results) {
                     if (err) throw err;
                     console.log('verify_simple_voting.py finished.');
-                    loadGraph(JSON.parse(results[results.length - 1]));
+                    let graph = JSON.parse(results[results.length - 1]);
+                    recolorGraph(graph);
                     loadLowerApproxModal(results);
                 });
             });
@@ -657,12 +644,11 @@
                 let voters = $param1Input.val();
                 let candidates = $param2Input.val();
 
-                resetGraph();
-
                 pyshell.run('python_module/verify_simple_voting.py', {args: [voters, candidates, 0]}, function (err, results) {
                     if (err) throw err;
                     console.log('verify_simple_voting.py finished.');
-                    loadGraph(JSON.parse(results[results.length - 1]));
+                    let graph = JSON.parse(results[results.length - 1]);
+                    recolorGraph(graph);
                     loadUpperApproxModal(results);
                 });
             });
@@ -673,20 +659,54 @@
                 let candidates = $param2Input.val();
                 let heuristic = $("#heuristic option:selected").val();
 
-                resetGraph();
-
                 pyshell.run('python_module/domino_simple_voting.py', {args: [voters, candidates, heuristic]}, function (err, results) {
                     if (err) throw err;
                     console.log('domino_simple_voting.py finished.');
-                    loadGraph(JSON.parse(results[results.length - 1]));
+                    let graph = JSON.parse(results[results.length - 1]);
+                    recolorGraph(graph);
                     loadDominoResults(results);
                 });
             });
         }
 
+        function recolorGraph(graph) {
+            let nodes = graph.nodes;
+            let links = graph.links;
+            clearGraphColor();
+            colorLinks(links);
+            colorNodes(nodes);
+        }
+
+        function colorLinks(links) {
+            for (let i = 0; i < links.length; i++) {
+                if (links[i]['str'] === 1) {
+                    let id = links[i]['id'];
+                    $('#link_' + id).attr('stroke', '#F00');
+                }
+            }
+        }
+
+        function colorNodes(nodes) {
+            for (let i = 0; i < nodes.length; i++) {
+                if (nodes[i]['str'] === 1) {
+                    let id = nodes[i]['id'];
+                    $('#node_' + id).attr('fill', '#0F0');
+                }
+            }
+        }
+
+        function clearGraphColor() {
+            clearNodesColor();
+            clearLinkColor();
+        }
+
         function clearNodesColor() {
             $('g circle').attr('fill', '#CCC');
             $('#node_0').attr('fill', '#00F');
+        }
+
+        function clearLinkColor() {
+            $('.link').attr('stroke', '#CCC');
         }
 
         function loadGraph(graph) {
@@ -741,6 +761,9 @@
 
                 //Add mouseover events to links
                 link.attr('class', 'link')
+                    .attr('id', function (d) {
+                        return 'link_' + d.id;
+                    })
                     .on('mouseover.fade', linkFade(0.1))
                     .on('mouseover.tooltip', function (d) {
                         tooltip.transition()
@@ -789,8 +812,8 @@
                     .append("g")
                     .attr("class", "node")
                     .call(d3.drag()
-                            .on("start", dragstarted)
-                            .on("drag", dragged)
+                        .on("start", dragstarted)
+                        .on("drag", dragged)
                     );
 
                 node.append("circle")

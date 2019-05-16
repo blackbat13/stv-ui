@@ -52,4 +52,4 @@ if result:
     print("1")
 else:
     print("0")
-print(drone_model.model.js_dump_strategy(strategy))
+print(drone_model.model.js_dump_strategy_objective(strategy))

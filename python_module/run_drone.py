@@ -10,4 +10,4 @@ for _ in range(0, n):
 
 drone_model = DroneModel(n, energies, CracowMap())
 drone_model.listify_states()
-print(drone_model.model.js_dump())
+print(drone_model.model.js_dump_model())

@@ -7,7 +7,7 @@ no_candidates = int(sys.argv[2])
 heuristic = int(sys.argv[3])
 
 simple_voting = SimpleVotingModel(no_candidates, no_voters)
-print(simple_voting.model.js_dump())
+print(simple_voting.model.js_dump_model())
 
 winning = []
 
@@ -36,4 +36,4 @@ if result:
     print("1")
 else:
     print("0")
-print(simple_voting.model.js_dump_strategy(strategy))
+print(simple_voting.model.js_dump_strategy_objective(strategy))

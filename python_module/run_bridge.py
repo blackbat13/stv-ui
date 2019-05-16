@@ -16,4 +16,4 @@ file_hands.write(json.dumps(hands))
 file_hands.close()
 
 bridge_model.transitions_to_readable()
-print(bridge_model.model.js_dump())
+print(bridge_model.model.js_dump_model())

@@ -6,7 +6,7 @@ no_candidates = int(sys.argv[2])
 v = int(sys.argv[3])
 
 simple_voting = SimpleVotingModel(no_candidates, no_voters)
-print(simple_voting.model.js_dump())
+print(simple_voting.model.js_dump_model())
 
 if v == 1:
     atl_model = simple_voting.model.to_atl_imperfect(simple_voting.get_actions())
@@ -32,4 +32,4 @@ if 0 in result:
 else:
     print(0)
 print(len(result))
-print(simple_voting.model.js_dump_strategy(atl_model.strategy))
+print(simple_voting.model.js_dump_strategy_objective(atl_model.strategy))

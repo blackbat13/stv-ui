@@ -6,7 +6,7 @@ horses = int(sys.argv[1])
 v = int(sys.argv[2])
 
 tian_ji_model = TianJiModel(horses)
-print(tian_ji_model.model.js_dump())
+print(tian_ji_model.model.js_dump_model())
 
 if v == 1:
     atl_model = tian_ji_model.model.to_atl_imperfect(tian_ji_model.get_actions())
@@ -28,4 +28,4 @@ if 0 in result:
 else:
     print(0)
 print(len(result))
-print(tian_ji_model.model.js_dump_strategy(atl_model.strategy))
+print(tian_ji_model.model.js_dump_strategy_objective(atl_model.strategy))

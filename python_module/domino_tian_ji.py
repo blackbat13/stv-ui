@@ -32,4 +32,4 @@ if result:
     print("1")
 else:
     print("0")
-print(tian_ji_model.model.js_dump_strategy(strategy))
+print(tian_ji_model.model.js_dump_strategy_objective(strategy))

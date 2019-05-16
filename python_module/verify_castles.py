@@ -8,7 +8,7 @@ life = int(sys.argv[4])
 v = int(sys.argv[5])
 
 castle_model = CastleModel([castle1_size, castle2_size, castle3_size], [life, life, life])
-print(castle_model.model.js_dump())
+print(castle_model.model.js_dump_model())
 
 if v == 1:
     atl_model = castle_model.model.to_atl_imperfect(castle_model.get_actions())
@@ -34,4 +34,4 @@ if 0 in result:
 else:
     print(0)
 print(len(result))
-print(castle_model.model.js_dump_strategy(atl_model.strategy))
+print(castle_model.model.js_dump_strategy_objective(atl_model.strategy))
