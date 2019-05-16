@@ -36,4 +36,4 @@ if 0 in result:
 else:
     print(0)
 print(len(result))
-print(list(result))
+print(bridge_model.model.js_dump_strategy(atl_model.strategy))

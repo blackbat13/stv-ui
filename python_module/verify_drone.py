@@ -10,6 +10,7 @@ for _ in range(0, n):
     energies.append(k)
 
 drone_model = DroneModel(n, energies, CracowMap())
+drone_model.listify_states()
 if v == 1:
     atl_model = drone_model.model.to_atl_imperfect(drone_model.get_actions())
 else:
@@ -34,4 +35,4 @@ if 0 in result:
 else:
     print(0)
 print(len(result))
-print(list(result))
+print(drone_model.model.js_dump_strategy(atl_model.strategy))

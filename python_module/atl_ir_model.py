@@ -1,44 +1,82 @@
-from number_tools import NumberTools
-from array_tools import ArrayTools
-from typing import List, Set
-from disjoint_set import DisjointSet
 import itertools
 import copy
+from typing import List, Set
+from number_tools import NumberTools
+from array_tools import ArrayTools
+from disjoint_set import DisjointSet
+from transition import Transition
 
 
 class ATLIrModel:
     """Class for creating ATL models with perfect information and imperfect recall"""
-    class Transition:
-        def __init__(self, next_state: int, actions: List[str]):
-            self.actions = actions[:]
-            self.next_state = next_state
 
-        @property
-        def next_state(self) -> int:
-            return self.__next_state
+    @property
+    def number_of_agents(self) -> int:
+        return self.__number_of_agents
 
-        @next_state.setter
-        def next_state(self, value: int):
-            self.__next_state = value
+    @number_of_agents.setter
+    def number_of_agents(self, value: int):
+        if value < 0:
+            raise AttributeError
+        self.__number_of_agents = value
 
-        @property
-        def actions(self) -> List[str]:
-            return self.__actions
+    @property
+    def transitions(self) -> List[List[Transition]]:
+        return self.__transitions
 
-        @actions.setter
-        def actions(self, value: List[str]):
-            self.__actions = value
+    @transitions.setter
+    def transitions(self, value: List[List[Transition]]):
+        self.__transitions = value
 
-        def to_str(self):
-            return f"Next state: {self.next_state}; Actions: {self.actions}"
+    @property
+    def reverse_transitions(self) -> List[List[Transition]]:
+        return self.__reverse_transitions
 
-    number_of_agents: int = 0
-    transitions: List[List[Transition]] = []
-    reverse_transitions: List[List[Transition]] = []
-    agents_actions: List[Set] = []
-    pre_states: List[Set] = []
-    number_of_states: int = 0
-    states: List = []
+    @reverse_transitions.setter
+    def reverse_transitions(self, value: List[List[Transition]]):
+        self.__reverse_transitions = value
+
+    @property
+    def agents_actions(self) -> List[Set]:
+        return self.__agents_actions
+
+    @agents_actions.setter
+    def agents_actions(self, value: List[Set]):
+        self.__agents_actions = value
+
+    @property
+    def pre_states(self) -> List[Set]:
+        return self.__pre_states
+
+    @pre_states.setter
+    def pre_states(self, value: List[Set]):
+        self.__pre_states = value
+
+    @property
+    def number_of_states(self) -> int:
+        return self.__number_of_states
+
+    @number_of_states.setter
+    def number_of_states(self, value: int):
+        if value < 0:
+            raise AttributeError
+        self.__number_of_states = value
+
+    @property
+    def states(self) -> List:
+        return self.__states
+
+    @states.setter
+    def states(self, value: List):
+        self.__states = value
+
+    @property
+    def strategy(self) -> List:
+        return self.__strategy
+
+    @strategy.setter
+    def strategy(self, value: List):
+        self.__strategy = value
 
     def __init__(self, number_of_agents: int):
         self.number_of_agents = number_of_agents
@@ -74,15 +112,14 @@ class ATLIrModel:
             self.pre_states.append(set())
 
     def add_transition(self, from_state: int, to_state: int, actions: List[str]):
-        self.enlarge_transitions(to_state + 1)  # TODO This is slow. Better idea?
+        self.enlarge_transitions(max(to_state, from_state) + 1)  # TODO This is slow. Better idea?
         self.number_of_states = NumberTools.max(self.number_of_states, to_state + 1)
-        self.transitions[from_state].append(self.Transition(next_state=to_state, actions=actions))
-        self.reverse_transitions[to_state].append(self.Transition(next_state=from_state, actions=actions))
+        self.transitions[from_state].append(Transition(next_state=to_state, actions=actions))
+        self.reverse_transitions[to_state].append(Transition(next_state=from_state, actions=actions))
         self.pre_states[to_state].add(from_state)
 
     def minimum_formula_one_agent(self, agent_id: int, winning_states: Set[int]) -> Set[int]:
-        result_states = set()
-        result_states.update(winning_states)
+        result_states = self.prepare_result_states(winning_states)
         result_states_length = len(result_states)
         current_states = winning_states.copy()
         is_winning_state = self.marked_winning_states(winning_states)
@@ -96,6 +133,11 @@ class ATLIrModel:
 
         return result_states
 
+    def prepare_result_states(self, winning_states: Set[int]) -> Set[int]:
+        result_states = set()
+        result_states.update(winning_states)
+        return result_states
+
     def marked_winning_states(self, winning_states: Set[int]) -> List[bool]:
         is_winning_state = ArrayTools.create_value_array_of_size(self.number_of_states, False)
         for state_id in winning_states:
@@ -104,8 +146,7 @@ class ATLIrModel:
         return is_winning_state
 
     def maximum_formula_one_agent(self, agent_id: int, winning_states: Set[int]) -> Set[int]:
-        result_states = set()
-        result_states.update(winning_states)
+        result_states = self.prepare_result_states(winning_states)
         result_states_length = len(result_states)
         current_states = winning_states.copy()
         is_winning_state = self.marked_winning_states(winning_states)
@@ -126,9 +167,7 @@ class ATLIrModel:
     def basic_formula_one_agent(self, agent_id: int, current_states: Set[int], is_winning_state: List[bool]) -> Set[
         int]:
         result_states = set()
-        pre_image = set()
-        for state_id in current_states:
-            pre_image = pre_image.union(self.pre_states[state_id])
+        pre_image = self.prepare_pre_image(current_states)
 
         for state_id in pre_image:
             for action in self.agents_actions[agent_id]:
@@ -150,11 +189,11 @@ class ATLIrModel:
         return result
 
     def minimum_formula_many_agents(self, agent_ids: List[int], winning_states: Set[int]) -> Set[int]:
-        result_states = set()
-        result_states.update(winning_states)
+        result_states = self.prepare_result_states(winning_states)
         result_states_length = len(result_states)
         current_states = winning_states.copy()
         is_winning_state = self.marked_winning_states(winning_states)
+        self.strategy = ArrayTools.create_value_array_of_size(self.number_of_states, None)
         while True:
             current_states = self.basic_formula_many_agents(agent_ids, current_states, is_winning_state)
             result_states.update(current_states)
@@ -166,11 +205,11 @@ class ATLIrModel:
         return result_states
 
     def maximum_formula_many_agents(self, agent_ids: List[int], winning_states: Set[int]) -> Set[int]:
-        result_states = set()
-        result_states.update(winning_states)
+        result_states = self.prepare_result_states(winning_states)
         result_states_length = len(result_states)
         current_states = winning_states.copy()
         is_winning_state = self.marked_winning_states(winning_states)
+        self.strategy = ArrayTools.create_value_array_of_size(self.number_of_states, None)
         while True:
             current_states = self.basic_formula_many_agents(agent_ids, current_states, is_winning_state)
             to_remove = result_states.difference(current_states)
@@ -187,22 +226,32 @@ class ATLIrModel:
     def basic_formula_many_agents(self, agent_ids: List[int], current_states: Set[int],
                                   is_winning_state: List[bool]) -> Set[int]:
         result_states = set()
-        pre_image = set()
-        for state_id in current_states:
-            pre_image = pre_image.union(self.pre_states[state_id])
-
-        actions = []
-        for agent_id in agent_ids:
-            actions.append(self.agents_actions[agent_id])
+        pre_image = self.prepare_pre_image(current_states)
+        actions = self.get_agents_actions(agent_ids)
 
         for state_id in pre_image:
             for action in itertools.product(*actions):
                 if self.is_reachable_by_agents(agent_ids, state_id, action, is_winning_state):
+                    self.strategy[state_id] = list(action)
                     result_states.add(state_id)
                     is_winning_state[state_id] = True
                     break
 
         return result_states
+
+    def prepare_pre_image(self, states: Set[int]) -> Set[int]:
+        pre_image = set()
+        for state_id in states:
+            pre_image = pre_image.union(self.pre_states[state_id])
+
+        return pre_image
+
+    def get_agents_actions(self, agents_ids: List[int]) -> List[Set[str]]:
+        actions = []
+        for agent_id in agents_ids:
+            actions.append(self.agents_actions[agent_id])
+
+        return actions
 
     def is_reachable_by_agents(self, agent_ids: List[int], state_id: int, actions: List[str],
                                is_winning_state: List[bool]):
@@ -221,8 +270,7 @@ class ATLIrModel:
         return result
 
     def minimum_formula_no_agents(self, winning_states: Set[int]) -> Set[int]:
-        result_states = set()
-        result_states.update(winning_states)
+        result_states = self.prepare_result_states(winning_states)
         result_states_length = len(result_states)
         current_states = winning_states.copy()
         is_winning_state = self.marked_winning_states(winning_states)
@@ -237,8 +285,7 @@ class ATLIrModel:
         return result_states
 
     def maximum_formula_no_agents(self, winning_states: Set[int]) -> Set[int]:
-        result_states = set()
-        result_states.update(winning_states)
+        result_states = self.prepare_result_states(winning_states)
         result_states_length = len(result_states)
         current_states = winning_states.copy()
         is_winning_state = self.marked_winning_states(winning_states)
@@ -257,9 +304,7 @@ class ATLIrModel:
 
     def basic_formula_no_agents(self, current_states: Set[int], is_winning_state: List[bool]) -> Set[int]:
         result_states = set()
-        pre_image = set()
-        for state_id in current_states:
-            pre_image = pre_image.union(self.pre_states[state_id])
+        pre_image = self.prepare_pre_image(current_states)
 
         for state_id in pre_image:
             if self.is_reachable_in_model(state_id, is_winning_state):
@@ -269,13 +314,11 @@ class ATLIrModel:
         return result_states
 
     def is_reachable_in_model(self, state_id: int, is_winning_state: List[bool]):
-        result = False
         for transition in self.transitions[state_id]:
-            result = True
-            if not is_winning_state[transition.next_state]:
-                return False
+            if is_winning_state[transition.next_state]:
+                return True
 
-        return result
+        return False
 
     def print_model(self):
         print("----MODEL START-----")
@@ -287,9 +330,30 @@ class ATLIrModel:
 
 class ATLirModel(ATLIrModel):
     """Class for creating ATL models with imperfect information and imperfect recall"""
-    epistemic_class_membership: List[List[int]] = []
-    imperfect_information: List[List] = []
-    finish_model_called = False
+
+    @property
+    def epistemic_class_membership(self) -> List[List[int]]:
+        return self.__epistemic_class_membership
+
+    @epistemic_class_membership.setter
+    def epistemic_class_membership(self, value: List[List[int]]):
+        self.__epistemic_class_membership = value
+
+    @property
+    def imperfect_information(self) -> List[List]:
+        return self.__imperfect_information
+
+    @imperfect_information.setter
+    def imperfect_information(self, value: List[List]):
+        self.__imperfect_information = value
+
+    @property
+    def finish_model_called(self) -> bool:
+        return self.__finish_model_called
+
+    @finish_model_called.setter
+    def finish_model_called(self, value: bool):
+        self.__finish_model_called = value
 
     def __init__(self, number_of_agents):
         super().__init__(number_of_agents)
@@ -326,8 +390,9 @@ class ATLirModel(ATLIrModel):
                     if self.is_reachable_by_agent(agent_id, pre_state, action, is_winning_state):
                         epistemic_class = self.epistemic_class_for_state_one_agent(pre_state, agent_id)
                         result_states.update(epistemic_class)
-                        for state_id_2 in epistemic_class:
-                            is_winning_state[state_id_2] = True
+                        for epistemic_state_id in epistemic_class:
+                            self.strategy[epistemic_state_id] = list(action)
+                            is_winning_state[epistemic_state_id] = True
                         break
 
         return result_states
@@ -344,12 +409,10 @@ class ATLirModel(ATLIrModel):
 
         return result
 
-    def basic_formula_many_agents(self, agent_ids: List[int], current_states: Set[int],
+    def basic_formula_many_agents(self, agents_ids: List[int], current_states: Set[int],
                                   is_winning_state: List[bool]) -> Set[int]:
         result_states = set()
-        actions = []
-        for agent_id in agent_ids:
-            actions.append(self.agents_actions[agent_id])
+        actions = self.get_agents_actions(agents_ids)
 
         for state_id in current_states:
             for pre_state in self.pre_states[state_id]:
@@ -357,11 +420,12 @@ class ATLirModel(ATLIrModel):
                     continue
 
                 for action in itertools.product(*actions):
-                    if self.is_reachable_by_agents(agent_ids, pre_state, action, is_winning_state):
-                        epistemic_class = self.epistemic_class_for_state_multiple_agents(pre_state, agent_ids)
+                    if self.is_reachable_by_agents(agents_ids, pre_state, action, is_winning_state):
+                        epistemic_class = self.epistemic_class_for_state_multiple_agents(pre_state, agents_ids)
                         result_states.update(epistemic_class)
-                        for state_id_2 in epistemic_class:
-                            is_winning_state[state_id_2] = True
+                        for epistemic_state_id in epistemic_class:
+                            is_winning_state[epistemic_state_id] = True
+                            self.strategy[epistemic_state_id] = list(action)
                         break
 
         return result_states
@@ -403,11 +467,46 @@ class ATLirModel(ATLIrModel):
 
 class ATLirModelDisjoint(ATLIrModel):
     """Class for creating ATL models with imperfect information and imperfect recall using disjoint-union structure"""
-    epistemic_class_membership: List[List[int]] = []
-    epistemic_class_disjoint: List[DisjointSet] = []
-    imperfect_information: List[List] = []
-    can_go_there: List[List[dict]] = []
-    finish_model_called = False
+
+    @property
+    def epistemic_class_membership(self) -> List[List[int]]:
+        return self.__epistemic_class_membership
+
+    @epistemic_class_membership.setter
+    def epistemic_class_membership(self, value: List[List[int]]):
+        self.__epistemic_class_membership = value
+
+    @property
+    def epistemic_class_disjoint(self) -> List[DisjointSet]:
+        return self.__epistemic_class_disjoint
+
+    @epistemic_class_disjoint.setter
+    def epistemic_class_disjoint(self, value: List[DisjointSet]):
+        self.__epistemic_class_disjoint = value
+
+    @property
+    def imperfect_information(self) -> List[List]:
+        return self.__imperfect_information
+
+    @imperfect_information.setter
+    def imperfect_information(self, value: List[List]):
+        self.__imperfect_information = value
+
+    @property
+    def can_go_there(self) -> List[List[dict]]:
+        return self.__can_go_there
+
+    @can_go_there.setter
+    def can_go_there(self, value: List[List[dict]]):
+        self.__can_go_there = value
+
+    @property
+    def finish_model_called(self) -> bool:
+        return self.__finish_model_called
+
+    @finish_model_called.setter
+    def finish_model_called(self, value: bool):
+        self.__finish_model_called = value
 
     def __init__(self, number_of_agents):
         super().__init__(number_of_agents)
@@ -463,8 +562,7 @@ class ATLirModelDisjoint(ATLIrModel):
             self.can_go_there[agent_id][epistemic_class_id][action] = can_go_temp
 
     def minimum_formula_one_agent(self, agent_id: int, winning_states: Set[int]) -> Set[int]:
-        result_states = set()
-        result_states.update(winning_states)
+        result_states = self.prepare_result_states(winning_states)
         current_states = winning_states.copy()
         winning_states_disjoint = DisjointSet(0)
         winning_states_disjoint.subsets = copy.deepcopy(self.epistemic_class_disjoint[agent_id].subsets)
@@ -502,13 +600,13 @@ class ATLirModelDisjoint(ATLIrModel):
                                                                                                       int], bool):
         result_states = set()
         first_winning_state_id = winning_states.find(first_winning_state_id)
-        preimage = set()
+        pre_image = set()
         actions = self.agents_actions[agent_id]
         for winning_state in current_states:
             for pre_state in self.pre_states[winning_state]:
-                preimage.add(self.epistemic_class_membership[agent_id][pre_state])
+                pre_image.add(self.epistemic_class_membership[agent_id][pre_state])
 
-        for state_epistemic_class in preimage:
+        for state_epistemic_class in pre_image:
             state = next(iter(self.imperfect_information[agent_id][state_epistemic_class]))
             state = winning_states.find(state)
             if state == first_winning_state_id:

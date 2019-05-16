@@ -344,15 +344,12 @@
             $buttonLowerApprox.on('click', function () {
                 let horses = $param1Input.val();
 
+                resetGraph();
+
                 pyshell.run('python_module/verify_tian_ji.py', {args: [horses, 1]}, function (err, results) {
                     if (err) throw err;
                     console.log('verify_tian_ji.py finished.');
-                    clearNodesColor();
-                    let states = JSON.parse(results[results.length - 1]);
-                    for (let i = 0; i < states.length; i++) {
-                        $("#node_" + states[i]).attr('fill', '#0F0');
-                    }
-
+                    loadGraph(JSON.parse(results[results.length - 1]));
                     loadLowerApproxModal(results);
                 });
             });
@@ -361,15 +358,12 @@
             $buttonUpperApprox.on('click', function () {
                 let horses = $param1Input.val();
 
+                resetGraph();
+
                 pyshell.run('python_module/verify_tian_ji.py', {args: [horses, 0]}, function (err, results) {
                     if (err) throw err;
                     console.log('verify_tian_ji.py finished.');
-                    clearNodesColor();
-                    let states = JSON.parse(results[results.length - 1]);
-                    for (let i = 0; i < states.length; i++) {
-                        $("#node_" + states[i]).attr('fill', '#0F0');
-                    }
-
+                    loadGraph(JSON.parse(results[results.length - 1]));
                     loadUpperApproxModal(results);
                 });
             });
@@ -429,16 +423,12 @@
                 let castle3Size = $param3Input.val();
                 let life = $param4Input.val();
 
+                resetGraph();
 
                 pyshell.run('python_module/verify_castles.py', {args: [castle1Size, castle2Size, castle3Size, life, 1]}, function (err, results) {
                     if (err) throw err;
                     console.log('verify_castles.py finished.');
-                    clearNodesColor();
-                    let states = JSON.parse(results[results.length - 1]);
-                    for (let i = 0; i < states.length; i++) {
-                        $("#node_" + states[i]).attr('fill', '#0F0');
-                    }
-
+                    loadGraph(JSON.parse(results[results.length - 1]));
                     loadLowerApproxModal(results);
                 });
             });
@@ -450,16 +440,12 @@
                 let castle3Size = $param3Input.val();
                 let life = $param4Input.val();
 
+                resetGraph();
 
                 pyshell.run('python_module/verify_castles.py', {args: [castle1Size, castle2Size, castle3Size, life, 0]}, function (err, results) {
                     if (err) throw err;
                     console.log('verify_castles.py finished.');
-                    clearNodesColor();
-                    let states = JSON.parse(results[results.length - 1]);
-                    for (let i = 0; i < states.length; i++) {
-                        $("#node_" + states[i]).attr('fill', '#0F0');
-                    }
-
+                    loadGraph(JSON.parse(results[results.length - 1]));
                     loadUpperApproxModal(results);
                 });
             });
@@ -513,15 +499,12 @@
                 let n = $param1Input.val();
                 let k = $param2Input.val();
 
+                resetGraph();
+
                 pyshell.run('python_module/verify_bridge.py', {args: [n, k, 1]}, function (err, results) {
                     if (err) throw err;
                     console.log('verify_bridge.py finished.');
-                    clearNodesColor();
-                    let states = JSON.parse(results[results.length - 1]);
-                    for (let i = 0; i < states.length; i++) {
-                        $("#node_" + states[i]).attr('fill', '#0F0');
-                    }
-
+                    loadGraph(JSON.parse(results[results.length - 1]));
                     loadLowerApproxModal(results);
                 });
             });
@@ -531,15 +514,12 @@
                 let n = $param1Input.val();
                 let k = $param2Input.val();
 
+                resetGraph();
+
                 pyshell.run('python_module/verify_bridge.py', {args: [n, k, 0]}, function (err, results) {
                     if (err) throw err;
                     console.log('verify_bridge.py finished.');
-                    clearNodesColor();
-                    let states = JSON.parse(results[results.length - 1]);
-                    for (let i = 0; i < states.length; i++) {
-                        $("#node_" + states[i]).attr('fill', '#0F0');
-                    }
-
+                    loadGraph(JSON.parse(results[results.length - 1]));
                     loadUpperApproxModal(results);
                 });
             });
@@ -591,15 +571,12 @@
                 let n = $param1Input.val();
                 let k = $param2Input.val();
 
+                resetGraph();
+
                 pyshell.run('python_module/verify_drone.py', {args: [n, k, 1]}, function (err, results) {
                     if (err) throw err;
                     console.log('verify_drone.py finished.');
-                    clearNodesColor();
-                    let states = JSON.parse(results[results.length - 1]);
-                    for (let i = 0; i < states.length; i++) {
-                        $("#node_" + states[i]).attr('fill', '#0F0');
-                    }
-
+                    loadGraph(JSON.parse(results[results.length - 1]));
                     loadLowerApproxModal(results);
                 });
             });
@@ -609,15 +586,12 @@
                 let n = $param1Input.val();
                 let k = $param2Input.val();
 
+                resetGraph();
+
                 pyshell.run('python_module/verify_drone.py', {args: [n, k, 2]}, function (err, results) {
                     if (err) throw err;
                     console.log('verify_drone.py finished.');
-                    clearNodesColor();
-                    let states = JSON.parse(results[results.length - 1]);
-                    for (let i = 0; i < states.length; i++) {
-                        $("#node_" + states[i]).attr('fill', '#0F0');
-                    }
-
+                    loadGraph(JSON.parse(results[results.length - 1]));
                     loadUpperApproxModal(results);
                 });
             });
@@ -668,15 +642,12 @@
                 let voters = $param1Input.val();
                 let candidates = $param2Input.val();
 
+                resetGraph();
+
                 pyshell.run('python_module/verify_simple_voting.py', {args: [voters, candidates, 1]}, function (err, results) {
                     if (err) throw err;
                     console.log('verify_simple_voting.py finished.');
-                    clearNodesColor();
-                    let states = JSON.parse(results[results.length - 1]);
-                    for (let i = 0; i < states.length; i++) {
-                        $("#node_" + states[i]).attr('fill', '#0F0');
-                    }
-
+                    loadGraph(JSON.parse(results[results.length - 1]));
                     loadLowerApproxModal(results);
                 });
             });
@@ -686,15 +657,12 @@
                 let voters = $param1Input.val();
                 let candidates = $param2Input.val();
 
+                resetGraph();
+
                 pyshell.run('python_module/verify_simple_voting.py', {args: [voters, candidates, 0]}, function (err, results) {
                     if (err) throw err;
                     console.log('verify_simple_voting.py finished.');
-                    clearNodesColor();
-                    let states = JSON.parse(results[results.length - 1]);
-                    for (let i = 0; i < states.length; i++) {
-                        $("#node_" + states[i]).attr('fill', '#0F0');
-                    }
-
+                    loadGraph(JSON.parse(results[results.length - 1]));
                     loadUpperApproxModal(results);
                 });
             });
