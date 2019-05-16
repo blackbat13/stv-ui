@@ -15,5 +15,14 @@ file_hands = open("bridge_hands.txt", "w")
 file_hands.write(json.dumps(hands))
 file_hands.close()
 
+winning = []
+
+state_id = -1
+
+for state in bridge_model.states:
+    state_id += 1
+    if state['lefts'][0] > state['lefts'][1] and state['lefts'][0] + state['lefts'][1] == k:
+        winning.append(state_id)
+
 bridge_model.transitions_to_readable()
-print(bridge_model.model.js_dump_model())
+print(bridge_model.model.js_dump_model(winning))

@@ -305,12 +305,12 @@ class SimpleModel:
 
         return result
 
-    def js_dump_model(self) -> str:
-        nodes = self.fill_nodes_model()
+    def js_dump_model(self, winning=[]) -> str:
+        nodes = self.fill_nodes_model(winning)
         links = self.fill_links_model()
         return json.dumps({"nodes": nodes, "links": links})
 
-    def fill_nodes_model(self) -> List[hash]:
+    def fill_nodes_model(self, winning=[]) -> List[hash]:
         nodes = []
         state_id = 0
         for state in self.states:
@@ -319,6 +319,9 @@ class SimpleModel:
 
         for state_id in self.epistemic_class_for_state(0, 0):
             nodes[state_id]["bgn"] = 1
+
+        for state_id in winning:
+            nodes[state_id]["win"] = 1
 
         return nodes
 

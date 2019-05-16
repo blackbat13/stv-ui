@@ -693,6 +693,9 @@
                     $('#node_' + id).attr('fill', '#0F0');
                 }
             }
+
+            $('.node[initial=true]').attr('fill', '#00F');
+            $('.node[winning=true]').attr('fill', '#F0F');
         }
 
         function clearGraphColor() {
@@ -817,8 +820,15 @@
                     );
 
                 node.append("circle")
+                    .attr('class', 'node')
                     .attr('id', function (d) {
                         return "node_" + d.id
+                    })
+                    .attr('initial', function (d) {
+                        return d.bgn === 1;
+                    })
+                    .attr('winning', function(d) {
+                        return d.win === 1;
                     })
                     .attr("r", 20)
                     .attr("fill", function (d, i) {
@@ -830,6 +840,9 @@
                         }
                         if (d.bgn === 1) {
                             return "#00F";
+                        }
+                        if (d.win === 1) {
+                            return '#F0F';
                         }
                         return "#CCC";
                     })
