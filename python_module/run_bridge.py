@@ -15,4 +15,5 @@ file_hands = open("bridge_hands.txt", "w")
 file_hands.write(json.dumps(hands))
 file_hands.close()
 
+bridge_model.transitions_to_readable()
 print(bridge_model.model.js_dump())

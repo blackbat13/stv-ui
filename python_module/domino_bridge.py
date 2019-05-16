@@ -17,6 +17,7 @@ bridge_model = BridgeModel(n, k, {'board': [-1, -1, -1, -1], 'lefts': [0, 0],
                                   'hands': hands, 'next': 0, 'history': [],
                                   'beginning': 0, 'clock': 0, 'suit': -1})
 
+bridge_model.transitions_to_readable()
 bridge_model.model.to_subjective([0])
 
 winning = []
@@ -42,4 +43,5 @@ if result:
     print("1")
 else:
     print("0")
+
 print(bridge_model.model.js_dump_strategy_subjective(strategy))

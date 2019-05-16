@@ -1,3 +1,5 @@
+from typing import List
+
 from model_generator import ModelGenerator
 import itertools
 import random
@@ -125,11 +127,26 @@ class BridgeModel(ModelGenerator):
         return self.model
 
     def get_actions(self):
-        actions = [-1]
+        actions = ['Wait']
         for i in self.cards_available:
-            actions.append(i)
+            actions.append(self.card_to_readable(i))
 
         return [actions, actions[:], actions[:]]
+
+    def get_props_list(self) -> List[str]:
+        pass
+
+    def get_winning_states(self, prop: str) -> List[int]:
+        pass
+
+    def get_props_for_state(self, state: hash) -> List[str]:
+        pass
+
+    def transitions_to_readable(self):
+        for state_id in range(0, len(self.model.graph)):
+            for transition in self.model.graph[state_id]:
+                for act_id in range(0, len(transition.actions)):
+                    transition.actions[act_id] = self.card_to_readable(transition.actions[act_id])
 
     @staticmethod
     def new_state_after_play(state, card_index):

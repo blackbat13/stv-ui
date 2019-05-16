@@ -16,6 +16,7 @@ bridge_model = BridgeModel(n, k, {'board': [-1, -1, -1, -1], 'lefts': [0, 0],
                                   'hands': hands, 'next': 0, 'history': [],
                                   'beginning': 0, 'clock': 0, 'suit': -1})
 
+bridge_model.transitions_to_readable()
 if v == 1:
     atl_model = bridge_model.model.to_atl_imperfect(bridge_model.get_actions())
 else:
