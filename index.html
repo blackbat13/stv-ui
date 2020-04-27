@@ -160,6 +160,15 @@
                     <button type="button" class="btn btn-lg btn-primary" id="btn_domino_dfs">Domino DFS</button>
                 </div>
                 <hr/>
+                <div class="custom-control custom-checkbox">
+                    <input id="showNodeLabels" type="checkbox" class="custom-control-input"/>
+                    <label id="showNodeLabelsLabel" class="custom-control-label" for="showNodeLabels">Show State
+                        Labels</label>
+                </div>
+                <div class="custom-control custom-checkbox">
+                    <input id="showLabels" type="checkbox" class="custom-control-input"/>
+                    <label id="showLabelsLabel" class="custom-control-label" for="showLabels">Show Actions</label>
+                </div>
                 <div class="row">
                     <div class="col-6">
                         <button type="button" class="btn btn-lg btn-primary" id="btn_zoom_out"><i
@@ -248,6 +257,24 @@
 
             scale -= 0.1;
             $("svg").attr('transform', "scale(" + scale + ")");
+        });
+
+        $("#showLabels").change(function () {
+            if (this.checked) {
+                $(".edgeLabel").removeClass('display_none');
+            } else {
+                $(".edgeLabel").addClass('display_none');
+            }
+        });
+
+        $("#showNodeLabels").change(function () {
+            if (this.checked) {
+                $(".node_label").removeClass('display_none');
+                $(".node_props").removeClass('display_none');
+            } else {
+                $(".node_label").addClass('display_none');
+                $(".node_props").addClass('display_none');
+            }
         });
 
         $modelList.on('change', function () {
@@ -809,6 +836,35 @@
                     })
                     .style("pointer-events", "none");
 
+                edgelabels = svg.selectAll(".edgelabel")
+                    .data(links)
+                    .enter()
+                    .append('text')
+                    .style("pointer-events", "none")
+                    .attr('class', function () {
+                        if ($("#showLabels").prop('checked')) {
+                            return "edgeLabel";
+                        } else {
+                            return "edgeLabel display_none";
+                        }
+                    })
+                    .attr('id', function (d, i) {
+                        return 'edgelabel' + i
+                    })
+                    .attr('font-size', 20)
+                    .attr('fill', '#666');
+
+                edgelabels.append('textPath')
+                    .attr('xlink:href', function (d, i) {
+                        return '#link_' + d.id
+                    })
+                    .style("text-anchor", "middle")
+                    .style("pointer-events", "none")
+                    .attr("startOffset", "50%")
+                    .text(function (d) {
+                        return d.T;
+                    });
+
                 node = svg.selectAll(".node")
                     .data(nodes)
                     .enter()
@@ -827,7 +883,7 @@
                     .attr('initial', function (d) {
                         return d.bgn === 1;
                     })
-                    .attr('winning', function(d) {
+                    .attr('winning', function (d) {
                         return d.win === 1;
                     })
                     .attr("r", 20)
@@ -871,6 +927,38 @@
                     .attr("dy", ".3em").text(function (d) {
                     return d.id
                 });
+
+                node.append("text")
+                    .attr("dy", 35)
+                    .attr('dx', -20)
+                    .attr('class', function () {
+                        if ($("#showNodeLabels").prop('checked')) {
+                            return "node_label";
+                        } else {
+                            return "node_label display_none";
+                        }
+                    })
+                    .html(function (d) {
+                        return "Label: " + JSON.stringify(d.T);
+                    });
+
+                node.append("text")
+                    .attr("dy", 55)
+                    .attr('dx', -20)
+                    .attr('class', function () {
+                        if ($("#showNodeLabels").prop('checked')) {
+                            return "node_props";
+                        } else {
+                            return "node_props display_none";
+                        }
+                    })
+                    .html(function (d) {
+                        if (d.props === undefined) {
+                            return "";
+                        }
+
+                        return "Props: [" + d.props + "]";
+                    });
 
                 _.each(links, function (link) {
 
@@ -938,6 +1026,18 @@
 
                 edgepaths.attr('d', function (d) {
                     return 'M ' + d.source.x + ' ' + d.source.y + ' L ' + d.target.x + ' ' + d.target.y;
+                });
+
+                edgelabels.attr('transform', function (d) {
+                    if (d.target.x < d.source.x) {
+                        var bbox = this.getBBox();
+
+                        rx = bbox.x + bbox.width / 2;
+                        ry = bbox.y + bbox.height / 2;
+                        return 'rotate(180 ' + rx + ' ' + ry + ')';
+                    } else {
+                        return 'rotate(0)';
+                    }
                 });
             }
 
