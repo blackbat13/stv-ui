@@ -336,6 +336,13 @@ class SimpleModel:
                     {"id": id, "source": state_id, "target": transition.next_state, "T": transition.actions, "str": 0})
                 id += 1
 
+        for agent_id in range(1):#range(self.no_agents):
+            for state_id_1 in range(self.no_states):
+                for state_id_2 in range(state_id_1 + 1, self.no_states):
+                    if self.epistemic_class_membership[agent_id][state_id_1] == self.epistemic_class_membership[agent_id][state_id_2]:
+                        links.append({'id': id, "source": state_id_1, "target": state_id_2, "T": agent_id, "str": 3})
+                        id += 1
+
         return links
 
     def js_dump_strategy_objective(self, strategy) -> str:
@@ -362,6 +369,13 @@ class SimpleModel:
 
                 self.js_dump_transition(transition, state_id, strategy, links, nodes, id)
                 id += 1
+
+        for agent_id in range(1):#range(self.no_agents):
+            for state_id_1 in range(self.no_states):
+                for state_id_2 in range(state_id_1 + 1, self.no_states):
+                    if self.epistemic_class_membership[agent_id][state_id_1] == self.epistemic_class_membership[agent_id][state_id_2]:
+                        links.append({'id': id, "source": state_id_1, "target": state_id_2, "T": agent_id, "str": 3})
+                        id += 1
 
         return links
 
@@ -392,6 +406,13 @@ class SimpleModel:
 
                 self.js_dump_transition(transition, state_id, strategy, links, nodes, id)
                 id += 1
+
+        for agent_id in range(1):#range(self.no_agents):
+            for state_id_1 in range(self.no_states):
+                for state_id_2 in range(state_id_1 + 1, self.no_states):
+                    if self.epistemic_class_membership[agent_id][state_id_1] == self.epistemic_class_membership[agent_id][state_id_2]:
+                        links.append({'id': id, "source": state_id_1, "target": state_id_2, "T": agent_id, "str": 3})
+                        id += 1
 
         return links
 
